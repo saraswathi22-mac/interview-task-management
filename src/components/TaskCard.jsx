@@ -1,81 +1,98 @@
 import { Link } from "react-router-dom";
 
 const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
-  const techStack = task.techStack;
-  const difficulty = task.difficulty;
+  const { techStack, difficulty, status } = task;
+
+  // 🎨 Difficulty color
+  const difficultyColor = {
+    easy: "bg-green-100 text-green-700",
+    medium: "bg-yellow-100 text-yellow-700",
+    hard: "bg-red-100 text-red-700",
+  };
+
+  // 🎨 Status color
+  const statusColor = {
+    done: "text-green-600",
+    skipped: "text-yellow-600",
+    todo: "text-gray-700",
+  };
 
   return (
     <div
-      className={`rounded-lg border p-4 flex justify-between gap-4 ${
+      className={`group rounded-xl border p-4 flex justify-between gap-4 transition-all duration-200 ${
         isPastDay
-          ? "bg-gray-50 border-gray-200 opacity-75"
-          : "bg-white border-gray-300 shadow-sm"
+          ? "bg-gray-50 border-gray-200 opacity-70"
+          : "bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300"
       }`}
     >
-      {/* Task Details */}
-      <div className="space-y-1.5">
-        <h3 className="font-medium text-gray-900 leading-snug">
+      {/* 🔷 Task Info */}
+      <div className="space-y-2">
+        {/* Question */}
+        <h3 className="font-medium text-gray-900 leading-snug group-hover:text-indigo-600 transition">
           {task.question}
         </h3>
 
-        {/* Tech stack + difficulty */}
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span className="px-2 py-0.5 rounded bg-gray-100">{techStack}</span>
-          <span className="text-gray-400">•</span>
-          <span className="capitalize">{difficulty}</span>
+        {/* Tech + Difficulty */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 font-medium">
+            {techStack}
+          </span>
+
+          <span
+            className={`px-2 py-0.5 rounded-md font-medium capitalize ${
+              difficultyColor[difficulty] || "bg-gray-100 text-gray-600"
+            }`}
+          >
+            {difficulty}
+          </span>
         </div>
 
         {/* Status */}
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-gray-500">
           Status:{" "}
-          <span
-            className={`font-semibold ${
-              task.status === "done"
-                ? "text-green-600"
-                : task.status === "skipped"
-                  ? "text-yellow-600"
-                  : "text-gray-700"
-            }`}
-          >
-            {task.status}
+          <span className={`font-semibold ${statusColor[status]}`}>
+            {status}
           </span>
         </p>
 
+        {/* Extra Info */}
         {task.isRolledOver && (
           <p className="text-xs text-orange-500">
-            ⏭ Rolled over from previous day
+            ⏭ Rolled over from yesterday
           </p>
         )}
 
         {isPastDay && (
-          <p className="text-xs text-gray-500">🔒 Read-only (past day)</p>
+          <p className="text-xs text-gray-400">
+            🔒 Read-only (past day)
+          </p>
         )}
       </div>
 
-      {/* Actions */}
+      {/* 🔷 Actions */}
       {!isPastDay && (
-        <div className="flex flex-col items-end gap-2 text-sm">
-          {task.status === "todo" && (
+        <div className="flex flex-col items-end gap-2 text-xs font-medium">
+          {status === "todo" && (
             <button
               onClick={() => onStatusChange(task.id, "done")}
-              className="text-green-600 hover:text-green-700"
+              className="px-2 py-1 rounded-md text-green-600 hover:bg-green-50 transition"
             >
-              Mark Done
+              ✓ Done
             </button>
           )}
 
           <Link
             to={`/edit-task/${task.id}`}
-            className="text-blue-600 hover:text-blue-700"
+            className="px-2 py-1 rounded-md text-blue-600 hover:bg-blue-50 transition"
           >
-            Edit
+            ✏ Edit
           </Link>
 
           <button
             onClick={() => onDelete(task.id)}
-            className="text-red-600 hover:text-red-700"
+            className="px-2 py-1 rounded-md text-red-600 hover:bg-red-50 transition"
           >
-            Delete
+            🗑 Delete
           </button>
         </div>
       )}
