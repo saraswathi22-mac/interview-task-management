@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   addInterviewTask,
   editInterviewTask,
@@ -22,43 +22,52 @@ import TopActions from "../../components/TopActions";
 
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
-  const interviewTasks = useSelector((store) => store.interviewTasks);
 
-  // -------- UI State --------
+  // 🔹 Redux State
+  const interviewTasks = useSelector((state) => state.interviewTasks);
+
+  // 🔹 UI State
+  const [selectedDate, setSelectedDate] = useState(getLocalDate());
   const [showWeeklySummary, setShowWeeklySummary] = useState(false);
 
-  // -------- Dates --------
+  // 🔹 Date Helpers
   const today = getLocalDate();
   const yesterday = getYesterday();
-
-  // -------- Selected Date --------
-  const [selectedDate, setSelectedDate] = useState(today);
 
   const isToday = selectedDate === today;
   const isPastDay = selectedDate < today;
 
-  // -------- Filters --------
-  const filteredTasks = interviewTasks.filter(
-    (task) => task.date === selectedDate,
+  // 🔹 Derived Data (Memoized 🚀)
+  const filteredTasks = useMemo(
+    () => interviewTasks.filter((t) => t.date === selectedDate),
+    [interviewTasks, selectedDate]
   );
 
-  const unfinishedYesterdayTasks = interviewTasks.filter(
-    (task) => task.date === yesterday && task.status === "todo",
+  const unfinishedYesterdayTasks = useMemo(
+    () =>
+      interviewTasks.filter(
+        (t) => t.date === yesterday && t.status === "todo"
+      ),
+    [interviewTasks, yesterday]
   );
 
-  // -------- Progress --------
   const completedTasks = filteredTasks.filter(
-    (task) => task.status === "done",
+    (t) => t.status === "done"
   ).length;
 
-  // -------- Actions --------
+  const currentWeekId = getWeekId(today);
+
+  const weeklyTasks = useMemo(
+    () =>
+      interviewTasks.filter(
+        (t) => getWeekId(t.date) === currentWeekId
+      ),
+    [interviewTasks, currentWeekId]
+  );
+
+  // 🔹 Actions
   const updateStatus = (id, status) => {
-    dispatch(
-      editInterviewTask({
-        id,
-        updates: { status },
-      }),
-    );
+    dispatch(editInterviewTask({ id, updates: { status } }));
   };
 
   const handleDelete = (id) => {
@@ -78,21 +87,14 @@ const InterviewTaskList = () => {
           isRolledOver: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        }),
+        })
       );
     });
   };
 
-  // -------- Weekly Data --------
-  const currentWeekId = getWeekId(today);
-  const weeklyTasks = interviewTasks.filter(
-    (task) => getWeekId(task.date) === currentWeekId,
-  );
-
-  // -------- UI --------
   return (
-    <div className="mt-6 space-y-10">
-      {/* Top Section */}
+    <div className="mt-6 space-y-10 max-w-4xl mx-auto px-4">
+      {/* 🔷 Header Actions */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
           isToday={isToday}
@@ -107,29 +109,31 @@ const InterviewTaskList = () => {
         />
       </div>
 
-      {/* Daily Progress */}
+      {/* 🔷 Daily Progress */}
       {isToday && (
-        <DailyProgress
-          completed={completedTasks}
-          total={filteredTasks.length}
-        />
+        <div className="bg-white rounded-xl shadow-sm p-4 border">
+          <DailyProgress
+            completed={completedTasks}
+            total={filteredTasks.length}
+          />
+        </div>
       )}
 
-      {/* Section Header */}
-      <div className="border-b pb-2">
-        <h2 className="text-lg font-semibold text-gray-800">
+      {/* 🔷 Section Header */}
+      <div className="border-b pb-3">
+        <h2 className="text-xl font-semibold text-gray-800">
           {isToday
             ? "Today's Interview Tasks"
-            : `Interview Tasks on ${selectedDate}`}
+            : `Tasks on ${selectedDate}`}
         </h2>
         <p className="text-sm text-gray-500 mt-1">
           {isPastDay
-            ? "Past days are read-only to keep progress honest"
-            : "Focus on completing today's planned questions"}
+            ? "Past days are read-only to maintain accurate progress"
+            : "Stay consistent. Complete today's plan 🚀"}
         </p>
       </div>
 
-      {/* Task List */}
+      {/* 🔷 Task List */}
       <div className="grid gap-4">
         {filteredTasks.length ? (
           filteredTasks.map((task) => (
@@ -142,38 +146,45 @@ const InterviewTaskList = () => {
             />
           ))
         ) : (
-          <div className="border border-dashed rounded-lg p-6 text-center bg-gray-50">
-            <p className="text-gray-600">No interview tasks for this date</p>
+          <div className="border border-dashed rounded-xl p-8 text-center bg-gray-50">
+            <p className="text-gray-600 font-medium">
+              No tasks for this date
+            </p>
             {isToday && (
-              <p className="text-sm text-gray-500 mt-1">
-                Add a task to plan your preparation
+              <p className="text-sm text-gray-500 mt-2">
+                Start by adding your first interview question ✨
               </p>
             )}
           </div>
         )}
       </div>
 
-      {/* Weekly Summary */}
+      {/* 🔷 Weekly Summary */}
       <div className="pt-8 border-t">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-800">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800">
             Weekly Summary
-            <span className="ml-2 text-sm font-normal text-gray-500">
+            <span className="ml-2 text-sm text-gray-500">
               ({currentWeekId})
             </span>
           </h2>
 
           <button
-            onClick={() => setShowWeeklySummary((prev) => !prev)}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            onClick={() =>
+              setShowWeeklySummary((prev) => !prev)
+            }
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
           >
-            {showWeeklySummary ? "Hide summary" : "Show summary"}
+            {showWeeklySummary ? "Hide" : "View"}
           </button>
         </div>
 
         {showWeeklySummary && (
-          <div className="mt-4">
-            <WeeklySummary tasks={weeklyTasks} weekId={currentWeekId} />
+          <div className="mt-4 bg-white rounded-xl shadow-sm p-4 border">
+            <WeeklySummary
+              tasks={weeklyTasks}
+              weekId={currentWeekId}
+            />
           </div>
         )}
       </div>

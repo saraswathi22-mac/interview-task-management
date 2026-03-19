@@ -11,7 +11,7 @@ function App() {
       <div className="container mx-auto max-w-5xl px-4 py-10 md:py-16">
 
         {/* App Header */}
-        <header className="mb-12 text-center">
+        <header className="mb-4 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
             Interview Prep Planner
           </h1>
