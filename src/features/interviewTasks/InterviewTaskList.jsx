@@ -30,6 +30,7 @@ const InterviewTaskList = () => {
   const [selectedDate, setSelectedDate] = useState(getLocalDate());
   const [showWeeklySummary, setShowWeeklySummary] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all"); // ✅ NEW
 
   // 🔹 Date Helpers
   const today = getLocalDate();
@@ -39,6 +40,7 @@ const InterviewTaskList = () => {
   const isPastDay = selectedDate < today;
 
   useEffect(() => {
+    setLoading(true); // ✅ reset loading when date changes
     const timer = setTimeout(() => {
       setLoading(false);
     }, 700);
@@ -47,10 +49,15 @@ const InterviewTaskList = () => {
   }, [selectedDate]);
 
   // 🔹 Derived Data (Memoized 🚀)
-  const filteredTasks = useMemo(
-    () => interviewTasks.filter((t) => t.date === selectedDate),
-    [interviewTasks, selectedDate]
-  );
+  const filteredTasks = useMemo(() => {
+    return interviewTasks
+      .filter((t) => t.date === selectedDate)
+      .filter((t) => {
+        if (filter === "completed") return t.status === "done";
+        if (filter === "pending") return t.status !== "done";
+        return true;
+      });
+  }, [interviewTasks, selectedDate, filter]);
 
   const unfinishedYesterdayTasks = useMemo(
     () =>
@@ -140,6 +147,36 @@ const InterviewTaskList = () => {
             ? "Past days are read-only to maintain accurate progress"
             : "Stay consistent. Complete today's plan 🚀"}
         </p>
+      </div>
+
+      {/* 🔷 FILTER BUTTONS */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setFilter("all")}
+          className={`px-3 py-1 border rounded ${
+            filter === "all" ? "bg-blue-500 text-white" : ""
+          }`}
+        >
+          All
+        </button>
+
+        <button
+          onClick={() => setFilter("completed")}
+          className={`px-3 py-1 border rounded ${
+            filter === "completed" ? "bg-blue-500 text-white" : ""
+          }`}
+        >
+          Completed
+        </button>
+
+        <button
+          onClick={() => setFilter("pending")}
+          className={`px-3 py-1 border rounded ${
+            filter === "pending" ? "bg-blue-500 text-white" : ""
+          }`}
+        >
+          Pending
+        </button>
       </div>
 
       {/* 🔷 Task List */}
