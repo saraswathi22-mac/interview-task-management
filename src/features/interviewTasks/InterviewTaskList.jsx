@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   addInterviewTask,
   editInterviewTask,
@@ -29,6 +29,7 @@ const InterviewTaskList = () => {
   // 🔹 UI State
   const [selectedDate, setSelectedDate] = useState(getLocalDate());
   const [showWeeklySummary, setShowWeeklySummary] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // 🔹 Date Helpers
   const today = getLocalDate();
@@ -36,6 +37,14 @@ const InterviewTaskList = () => {
 
   const isToday = selectedDate === today;
   const isPastDay = selectedDate < today;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [selectedDate]);
 
   // 🔹 Derived Data (Memoized 🚀)
   const filteredTasks = useMemo(
@@ -135,7 +144,11 @@ const InterviewTaskList = () => {
 
       {/* 🔷 Task List */}
       <div className="grid gap-4">
-        {filteredTasks.length ? (
+        {loading ? (
+          <div className="text-center py-10 text-gray-500">
+            Loading tasks...
+          </div>
+        ) : filteredTasks.length ? (
           filteredTasks.map((task) => (
             <TaskCard
               key={task.id}
