@@ -6,12 +6,14 @@ import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import { addInterviewTask } from "./interviewTaskSlice";
 import { getLocalDate, getWeekId } from "../../helpers/dateHelpers";
+import { auth } from "../../firebase/config";
 
 const AddInterviewTask = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const today = getLocalDate();
+  const user = auth.currentUser;
 
   const [values, setValues] = useState({
     question: "",
@@ -22,6 +24,11 @@ const AddInterviewTask = () => {
   const handleAddTask = () => {
     if (!values.question.trim()) return;
 
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
     dispatch(
       addInterviewTask({
         id: uuidv4(),
@@ -29,9 +36,10 @@ const AddInterviewTask = () => {
         weekId: getWeekId(today),
         question: values.question,
         techStack: values.techStack,
-        priority: values.priority, // ✅ NEW
+        priority: values.priority,
         status: "todo",
         isRolledOver: false,
+        userId: user.uid,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
@@ -95,7 +103,7 @@ const AddInterviewTask = () => {
               </select>
             </div>
 
-            {/* ✅ PRIORITY */}
+            {/* Priority */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700">
                 Priority

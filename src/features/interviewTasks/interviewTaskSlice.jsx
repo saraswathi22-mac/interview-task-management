@@ -1,15 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const loadInitialState = () => {
-  try {
-    const data = localStorage.getItem("interviewTasks");
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-};
-
-const initialState = loadInitialState();
+const initialState = [];
 
 const interviewTaskSlice = createSlice({
   name: "interviewTasks",

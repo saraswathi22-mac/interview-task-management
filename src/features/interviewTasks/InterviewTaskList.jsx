@@ -5,6 +5,7 @@ import {
   editInterviewTask,
   deleteInterviewTask,
 } from "./interviewTaskSlice";
+import { auth } from "../../firebase/config";
 
 // helpers
 import {
@@ -23,8 +24,17 @@ import TopActions from "../../components/TopActions";
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
 
+  // 🔹 Get current user
+  const user = auth.currentUser;
+
   // 🔹 Redux State
-  const interviewTasks = useSelector((state) => state.interviewTasks);
+  const allTasks = useSelector((state) => state.interviewTasks);
+
+  // ✅ Filter tasks by user
+  const interviewTasks = useMemo(() => {
+    if (!user) return [];
+    return allTasks.filter((task) => task.userId === user.uid);
+  }, [allTasks, user]);
 
   // 🔹 UI State
   const [selectedDate, setSelectedDate] = useState(getLocalDate());
@@ -51,7 +61,7 @@ const InterviewTaskList = () => {
   // 🔹 Priority Order
   const priorityOrder = { high: 1, medium: 2, low: 3 };
 
-  // 🔹 Derived Data (Memoized 🚀)
+  // 🔹 Derived Data
   const filteredTasks = useMemo(() => {
     return interviewTasks
       .filter((t) => t.date === selectedDate)
@@ -99,12 +109,13 @@ const InterviewTaskList = () => {
   };
 
   const rolloverUnfinishedTasks = () => {
-    if (!unfinishedYesterdayTasks.length) return;
+    if (!unfinishedYesterdayTasks.length || !user) return;
 
     unfinishedYesterdayTasks.forEach((task) => {
       dispatch(
         addInterviewTask({
           ...task,
+          userId: user.uid,
           id: crypto.randomUUID(),
           date: today,
           status: "todo",
@@ -119,7 +130,7 @@ const InterviewTaskList = () => {
   return (
     <div className="mt-6 space-y-10 max-w-4xl mx-auto px-4">
 
-      {/* 🔷 Header Actions */}
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
           isToday={isToday}
@@ -134,7 +145,7 @@ const InterviewTaskList = () => {
         />
       </div>
 
-      {/* 🔷 Daily Progress */}
+      {/* Daily Progress */}
       {isToday && (
         <div className="bg-white rounded-xl shadow-sm p-4 border">
           <DailyProgress
@@ -144,7 +155,7 @@ const InterviewTaskList = () => {
         </div>
       )}
 
-      {/* 🔷 Section Header */}
+      {/* Section Header */}
       <div className="border-b pb-3">
         <h2 className="text-xl font-semibold text-gray-800">
           {isToday
@@ -158,7 +169,7 @@ const InterviewTaskList = () => {
         </p>
       </div>
 
-      {/* 🔷 FILTER SECTION */}
+      {/* Filters */}
       <div>
         <p className="text-sm text-gray-500 mb-2">Filter tasks</p>
 
@@ -192,7 +203,7 @@ const InterviewTaskList = () => {
         </div>
       </div>
 
-      {/* 🔷 Task List */}
+      {/* Task List */}
       <div className="grid gap-4">
         {loading ? (
           <div className="text-center py-10 text-gray-500">
@@ -211,11 +222,9 @@ const InterviewTaskList = () => {
         ) : (
           <div className="border border-dashed rounded-xl p-10 text-center bg-gradient-to-br from-gray-50 to-gray-100">
             <div className="text-4xl mb-3">📝</div>
-
             <h3 className="text-lg font-semibold text-gray-700">
               No tasks for this day
             </h3>
-
             <p className="text-sm text-gray-500 mt-2">
               {isToday
                 ? "Start your interview prep by adding your first task 🚀"
@@ -225,7 +234,7 @@ const InterviewTaskList = () => {
         )}
       </div>
 
-      {/* 🔷 Weekly Summary */}
+      {/* Weekly Summary */}
       <div className="pt-8 border-t">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800">
@@ -236,9 +245,7 @@ const InterviewTaskList = () => {
           </h2>
 
           <button
-            onClick={() =>
-              setShowWeeklySummary((prev) => !prev)
-            }
+            onClick={() => setShowWeeklySummary((prev) => !prev)}
             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
           >
             {showWeeklySummary ? "Hide" : "View"}
