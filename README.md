@@ -1,4 +1,5 @@
 # interview-task-management
+---------------------------
 
 🔷 Interview Task Tracker
 A clean and structured React application to manage daily interview preparation with progress tracking and weekly insights.
