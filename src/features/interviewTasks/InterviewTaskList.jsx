@@ -24,25 +24,20 @@ import TopActions from "../../components/TopActions";
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
 
-  // 🔹 Get current user
   const user = auth.currentUser;
 
-  // 🔹 Redux State
   const allTasks = useSelector((state) => state.interviewTasks);
 
-  // ✅ Filter tasks by user
   const interviewTasks = useMemo(() => {
     if (!user) return [];
     return allTasks.filter((task) => task.userId === user.uid);
   }, [allTasks, user]);
 
-  // 🔹 UI State
   const [selectedDate, setSelectedDate] = useState(getLocalDate());
   const [showWeeklySummary, setShowWeeklySummary] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  // 🔹 Date Helpers
   const today = getLocalDate();
   const yesterday = getYesterday();
 
@@ -58,10 +53,8 @@ const InterviewTaskList = () => {
     return () => clearTimeout(timer);
   }, [selectedDate]);
 
-  // 🔹 Priority Order
   const priorityOrder = { high: 1, medium: 2, low: 3 };
 
-  // 🔹 Derived Data
   const filteredTasks = useMemo(() => {
     return interviewTasks
       .filter((t) => t.date === selectedDate)
@@ -76,6 +69,15 @@ const InterviewTaskList = () => {
         return priorityOrder[aPriority] - priorityOrder[bPriority];
       });
   }, [interviewTasks, selectedDate, filter]);
+
+  // ✅ NEW: Group tasks by status
+  const groupedTasks = useMemo(() => {
+    return {
+      todo: filteredTasks.filter((t) => t.status === "todo"),
+      inProgress: filteredTasks.filter((t) => t.status === "inProgress"),
+      done: filteredTasks.filter((t) => t.status === "done"),
+    };
+  }, [filteredTasks]);
 
   const unfinishedYesterdayTasks = useMemo(
     () =>
@@ -99,7 +101,6 @@ const InterviewTaskList = () => {
     [interviewTasks, currentWeekId]
   );
 
-  // 🔹 Actions
   const updateStatus = (id, status) => {
     dispatch(editInterviewTask({ id, updates: { status } }));
   };
@@ -128,8 +129,7 @@ const InterviewTaskList = () => {
   };
 
   return (
-    <div className="mt-6 space-y-10 max-w-4xl mx-auto px-4">
-
+    <div className="mt-6 space-y-10 max-w-6xl mx-auto px-4">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
@@ -203,35 +203,56 @@ const InterviewTaskList = () => {
         </div>
       </div>
 
-      {/* Task List */}
-      <div className="grid gap-4">
-        {loading ? (
-          <div className="text-center py-10 text-gray-500">
-            Loading tasks...
-          </div>
-        ) : filteredTasks.length ? (
-          filteredTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              isPastDay={isPastDay}
-              onStatusChange={updateStatus}
-              onDelete={handleDelete}
-            />
-          ))
-        ) : (
-          <div className="border border-dashed rounded-xl p-10 text-center bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="text-4xl mb-3">📝</div>
-            <h3 className="text-lg font-semibold text-gray-700">
-              No tasks for this day
-            </h3>
-            <p className="text-sm text-gray-500 mt-2">
-              {isToday
-                ? "Start your interview prep by adding your first task 🚀"
-                : "No tasks were planned for this date"}
-            </p>
-          </div>
-        )}
+      {/* ✅ Kanban Board */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {["todo", "inProgress", "done"].map((status) => {
+          const columnTasks = groupedTasks[status];
+
+          return (
+            <div
+              key={status}
+              className={`rounded-xl p-4 border min-h-[300px] ${
+                status === "todo"
+                  ? "bg-gray-50"
+                  : status === "inProgress"
+                  ? "bg-yellow-50"
+                  : "bg-green-50"
+              }`}
+            >
+              <h3 className="font-semibold text-gray-700 mb-4 capitalize">
+                {status === "todo"
+                  ? "Todo"
+                  : status === "inProgress"
+                  ? "In Progress"
+                  : "Done"}
+              </h3>
+
+              <div className="space-y-4">
+                {loading ? (
+                  <div className="text-sm text-gray-400">Loading...</div>
+                ) : columnTasks.length ? (
+                  columnTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition"
+                    >
+                      <TaskCard
+                        task={task}
+                        isPastDay={isPastDay}
+                        onStatusChange={updateStatus}
+                        onDelete={handleDelete}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-400 text-center py-6">
+                    No tasks
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Weekly Summary */}
