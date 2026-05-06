@@ -1,8 +1,35 @@
 import { Link } from "react-router-dom";
 
-const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const TaskCard = ({
+  task,
+  isPastDay,
+  onStatusChange,
+  onDelete,
+}) => {
   const { techStack, status } = task;
+
   const priority = task.priority || "medium";
+
+  // ✅ dnd-kit sortable hook
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id,
+  });
+
+  // ✅ drag styles
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const priorityColor = {
     high: "bg-red-100 text-red-700",
@@ -19,11 +46,17 @@ const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
 
   return (
     <div
-      className={`group rounded-xl p-4 flex flex-col gap-3 transition-all duration-200 border ${
-        isPastDay
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`group rounded-xl p-4 flex flex-col gap-3 transition-all duration-200 border cursor-grab active:cursor-grabbing ${isDragging
+          ? "opacity-50 scale-105 rotate-1 shadow-2xl z-50"
+          : ""
+        } ${isPastDay
           ? "bg-gray-50 border-gray-200 opacity-70"
           : "bg-white border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1"
-      }`}
+        }`}
     >
       {/* 🔷 Header */}
       <div className="flex justify-between items-start">
@@ -33,9 +66,9 @@ const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
 
         {/* Priority badge */}
         <span
-          className={`text-xs px-2 py-0.5 rounded-md font-medium capitalize ${
-            priorityColor[priority] || "bg-gray-100 text-gray-600"
-          }`}
+          className={`text-xs px-2 py-0.5 rounded-md font-medium capitalize ${priorityColor[priority] ||
+            "bg-gray-100 text-gray-600"
+            }`}
         >
           {priority}
         </span>
@@ -73,7 +106,12 @@ const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
           <div className="flex gap-2">
             {status === "todo" && (
               <button
-                onClick={() => onStatusChange(task.id, "inProgress")}
+                onClick={() =>
+                  onStatusChange(
+                    task.id,
+                    "inProgress"
+                  )
+                }
                 className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
               >
                 ▶ Start
@@ -82,7 +120,9 @@ const TaskCard = ({ task, isPastDay, onStatusChange, onDelete }) => {
 
             {status === "inProgress" && (
               <button
-                onClick={() => onStatusChange(task.id, "done")}
+                onClick={() =>
+                  onStatusChange(task.id, "done")
+                }
                 className="text-xs px-2 py-1 rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition"
               >
                 ✓ Done
