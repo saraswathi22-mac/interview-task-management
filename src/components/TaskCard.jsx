@@ -48,17 +48,22 @@ const TaskCard = ({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className={`group rounded-xl p-4 flex flex-col gap-3 transition-all duration-200 border cursor-grab active:cursor-grabbing ${isDragging
-          ? "opacity-50 scale-105 rotate-1 shadow-2xl z-50"
-          : ""
+        ? "opacity-50 scale-105 rotate-1 shadow-2xl z-50"
+        : ""
         } ${isPastDay
           ? "bg-gray-50 border-gray-200 opacity-70"
           : "bg-white border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1"
         }`}
     >
       {/* 🔷 Header */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="self-end cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+      >
+        ☰
+      </div>
       <div className="flex justify-between items-start">
         <h3 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-indigo-600 transition">
           {task.question}
@@ -106,12 +111,14 @@ const TaskCard = ({
           <div className="flex gap-2">
             {status === "todo" && (
               <button
-                onClick={() =>
+                onClick={(e) => {
+                  e.stopPropagation();
+
                   onStatusChange(
                     task.id,
                     "inProgress"
-                  )
-                }
+                  );
+                }}
                 className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
               >
                 ▶ Start
@@ -120,9 +127,14 @@ const TaskCard = ({
 
             {status === "inProgress" && (
               <button
-                onClick={() =>
-                  onStatusChange(task.id, "done")
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  onStatusChange(
+                    task.id,
+                    "done"
+                  );
+                }}
                 className="text-xs px-2 py-1 rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition"
               >
                 ✓ Done

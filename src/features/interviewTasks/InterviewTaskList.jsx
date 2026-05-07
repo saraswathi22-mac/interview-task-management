@@ -145,7 +145,7 @@ const InterviewTaskList = () => {
         (t) => t.status === "done"
       ),
     });
-  }, [filteredTasks]);
+  }, [filteredTasks, interviewTasks]);
 
   const unfinishedYesterdayTasks =
     useMemo(
