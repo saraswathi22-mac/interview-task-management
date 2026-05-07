@@ -479,11 +479,26 @@ const InterviewTaskList = () => {
                 key={status}
                 id={status}
                 title={
-                  status === "todo"
-                    ? "Todo"
-                    : status === "inProgress"
-                      ? "In Progress"
-                      : "Done"
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {status === "todo"
+                        ? "Todo"
+                        : status === "inProgress"
+                          ? "In Progress"
+                          : "Done"}
+                    </span>
+
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${status === "todo"
+                        ? "bg-gray-200 text-gray-700"
+                        : status === "inProgress"
+                          ? "bg-yellow-200 text-yellow-800"
+                          : "bg-green-200 text-green-800"
+                        }`}
+                    >
+                      {columnTasks.length}
+                    </span>
+                  </div>
                 }
                 className={`rounded-xl p-4 border min-h-[300px] ${status === "todo"
                   ? "bg-gray-50"
