@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+
+import { useDispatch, useSelector } from "react-redux";
+
 import { observeAuthState } from "./firebase/auth";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase/config";
+
+import {
+  loadTasks,
+  saveTasks,
+} from "./helpers/taskStorage";
+
+import {
+  setTasks,
+} from "./features/interviewTasks/interviewTaskSlice";
 
 import AddInterviewTask from "./features/interviewTasks/AddInterviewTask";
 import EditInterviewTask from "./features/interviewTasks/EditInterviewTask";
@@ -10,17 +22,46 @@ import InterviewTaskList from "./features/interviewTasks/InterviewTaskList";
 import Login from "./pages/Login";
 
 function App() {
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Redux
+  const dispatch = useDispatch();
+
+  const tasks = useSelector(
+    (state) => state.interviewTasks
+  );
+
+  // Observe Firebase auth state
   useEffect(() => {
-    const unsubscribe = observeAuthState((currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+
+    const unsubscribe = observeAuthState(
+      (currentUser) => {
+
+        setUser(currentUser);
+
+        // Load saved tasks for logged-in user
+        const savedTasks = loadTasks(currentUser);
+
+        dispatch(setTasks(savedTasks));
+
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
-  }, []);
+
+  }, [dispatch]);
+
+  // Save tasks whenever tasks change
+  useEffect(() => {
+
+    if (loading) return;
+
+    saveTasks(user, tasks);
+
+  }, [tasks, user, loading]);
 
   const handleLogout = async () => {
     try {
@@ -31,7 +72,11 @@ function App() {
   };
 
   if (loading)
-    return <p className="text-center mt-10">Loading...</p>;
+    return (
+      <p className="text-center mt-10">
+        Loading...
+      </p>
+    );
 
   if (!user) return <Login />;
 
@@ -48,14 +93,15 @@ function App() {
           </h1>
 
           <p className="text-sm md:text-base text-gray-600 max-w-xl">
-            Plan daily interview questions, track your progress, and improve
-            your preparation with a simple task planner.
+            Plan daily interview questions,
+            track your progress,
+            and improve your preparation
+            with a simple task planner.
           </p>
 
           {/* User + Logout */}
           <div className="flex items-center gap-4 mt-2">
 
-            {/* Styled Logout Button */}
             <button
               onClick={handleLogout}
               className="
@@ -79,9 +125,20 @@ function App() {
         <div className="bg-white shadow-md rounded-xl p-6 md:p-8">
 
           <Routes>
-            <Route path="/" element={<InterviewTaskList />} />
-            <Route path="/add-task" element={<AddInterviewTask />} />
-            <Route path="/edit-task/:id" element={<EditInterviewTask />} />
+            <Route
+              path="/"
+              element={<InterviewTaskList />}
+            />
+
+            <Route
+              path="/add-task"
+              element={<AddInterviewTask />}
+            />
+
+            <Route
+              path="/edit-task/:id"
+              element={<EditInterviewTask />}
+            />
           </Routes>
 
         </div>
