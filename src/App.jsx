@@ -10,7 +10,7 @@ import { auth } from "./firebase/config";
 import {
   loadTasks,
   saveTasks,
-} from "./helpers/taskStorage";
+} from "./firebase/taskStorage";
 
 import {
   setTasks,
@@ -37,12 +37,14 @@ function App() {
   useEffect(() => {
 
     const unsubscribe = observeAuthState(
-      (currentUser) => {
+      async (currentUser) => {
 
         setUser(currentUser);
 
-        // Load saved tasks for logged-in user
-        const savedTasks = loadTasks(currentUser);
+        // Load saved tasks from Firebase
+        const savedTasks = await loadTasks(
+          currentUser
+        );
 
         dispatch(setTasks(savedTasks));
 
@@ -59,7 +61,11 @@ function App() {
 
     if (loading) return;
 
-    saveTasks(user, tasks);
+    const saveData = async () => {
+      await saveTasks(user, tasks);
+    };
+
+    saveData();
 
   }, [tasks, user, loading]);
 
