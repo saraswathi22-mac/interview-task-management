@@ -38,6 +38,7 @@ import TaskCard from "../../components/TaskCard";
 import WeeklySummary from "../../components/WeeklySummary";
 import TopActions from "../../components/TopActions";
 import BoardColumn from "../../components/BoardColumn";
+import { deleteTaskFromFirebase } from "../../firebase/taskStorage";
 
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
@@ -188,8 +189,21 @@ const InterviewTaskList = () => {
     );
   };
 
-  const handleDelete = (id) => {
-    dispatch(deleteInterviewTask({ id }));
+  const handleDelete = async (id) => {
+    try {
+      // delete from firebase
+      await deleteTaskFromFirebase(
+        user,
+        id
+      );
+
+      // delete from redux
+      dispatch(
+        deleteInterviewTask({ id })
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const rolloverUnfinishedTasks =

@@ -3,6 +3,7 @@ import {
     getDocs,
     setDoc,
     doc,
+    deleteDoc
 } from "firebase/firestore";
 
 import { db } from "./config";
@@ -50,5 +51,25 @@ export const saveTasks = async (user, tasks) => {
         await Promise.all(promises);
     } catch (error) {
         console.error("Failed to save tasks", error);
+    }
+};
+
+// DELETE TASK
+export const deleteTaskFromFirebase = async (
+    user,
+    taskId
+) => {
+    try {
+        const collectionName = getCollectionName(user);
+        await deleteDoc(
+            doc(
+                db,
+                collectionName,
+                taskId.toString()
+            )
+        );
+
+    } catch (error) {
+        console.error("Failed to delete task", error);
     }
 };
