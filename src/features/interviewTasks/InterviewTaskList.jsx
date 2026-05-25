@@ -40,6 +40,8 @@ import TopActions from "../../components/TopActions";
 import BoardColumn from "../../components/BoardColumn";
 import { deleteTaskFromFirebase } from "../../firebase/taskStorage";
 
+import { motion } from "framer-motion";
+
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
 
@@ -374,7 +376,12 @@ const InterviewTaskList = () => {
   };
 
   return (
-    <div className="mt-6 space-y-10 max-w-6xl mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mt-6 space-y-10 max-w-6xl mx-auto px-4"
+    >
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
@@ -397,14 +404,25 @@ const InterviewTaskList = () => {
 
       {/* Daily Progress */}
       {isToday && (
-        <div className="bg-white rounded-xl shadow-sm p-4 border">
+        <motion.div
+          whileHover={{ y: -3 }}
+          transition={{ duration: 0.25 }}
+          className="
+    rounded-2xl
+    border border-white/10
+    bg-white/70
+    backdrop-blur-xl
+    shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+    p-5
+  "
+        >
           <DailyProgress
             completed={completedTasks}
             total={
               filteredTasks.length
             }
           />
-        </div>
+        </motion.div>
       )}
 
       {/* Section Header */}
@@ -433,10 +451,18 @@ const InterviewTaskList = () => {
             onClick={() =>
               setFilter("all")
             }
-            className={`px-3 py-1 border rounded ${filter === "all"
-              ? "bg-blue-500 text-white"
-              : ""
-              }`}
+            className={`
+  px-4 py-2 rounded-xl
+  transition-all duration-300
+  border border-white/10
+  backdrop-blur-md
+  shadow-sm
+  hover:scale-[1.03]
+  hover:shadow-lg
+  ${filter === "all"
+                ? "bg-blue-500 text-white"
+                : "bg-white/60 text-gray-700 hover:bg-white"}
+`}
           >
             All
           </button>
@@ -447,11 +473,18 @@ const InterviewTaskList = () => {
                 "completed"
               )
             }
-            className={`px-3 py-1 border rounded ${filter ===
-              "completed"
-              ? "bg-blue-500 text-white"
-              : ""
-              }`}
+            className={`
+  px-4 py-2 rounded-xl
+  transition-all duration-300
+  border border-white/10
+  backdrop-blur-md
+  shadow-sm
+  hover:scale-[1.03]
+  hover:shadow-lg
+  ${filter === "completed"
+                ? "bg-blue-500 text-white"
+                : "bg-white/60 text-gray-700 hover:bg-white"}
+`}
           >
             Completed
           </button>
@@ -460,10 +493,18 @@ const InterviewTaskList = () => {
             onClick={() =>
               setFilter("pending")
             }
-            className={`px-3 py-1 border rounded ${filter === "pending"
-              ? "bg-blue-500 text-white"
-              : ""
-              }`}
+            className={`
+  px-4 py-2 rounded-xl
+  transition-all duration-300
+  border border-white/10
+  backdrop-blur-md
+  shadow-sm
+  hover:scale-[1.03]
+  hover:shadow-lg
+  ${filter === "pending"
+                ? "bg-blue-500 text-white"
+                : "bg-white/60 text-gray-700 hover:bg-white"}
+`}
           >
             Pending
           </button>
@@ -490,37 +531,56 @@ const InterviewTaskList = () => {
 
             return (
               <BoardColumn
-                key={status}
-                id={status}
-                title={
-                  <div className="flex items-center gap-2">
-                    <span>
-                      {status === "todo"
-                        ? "Todo"
-                        : status === "inProgress"
-                          ? "In Progress"
-                          : "Done"}
-                    </span>
+  key={status}
+  id={status}
+  title={
+    <div className="flex items-center gap-2">
+      <span>
+        {status === "todo"
+          ? "Todo"
+          : status === "inProgress"
+          ? "In Progress"
+          : "Done"}
+      </span>
 
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${status === "todo"
-                        ? "bg-gray-200 text-gray-700"
-                        : status === "inProgress"
-                          ? "bg-yellow-200 text-yellow-800"
-                          : "bg-green-200 text-green-800"
-                        }`}
-                    >
-                      {columnTasks.length}
-                    </span>
-                  </div>
-                }
-                className={`rounded-xl p-4 border min-h-[300px] ${status === "todo"
-                  ? "bg-gray-50"
-                  : status === "inProgress"
-                    ? "bg-yellow-50"
-                    : "bg-green-50"
-                  }`}
-              >
+      <span
+        className={`
+          text-xs
+          px-2 py-0.5
+          rounded-full
+          font-medium
+
+          ${
+            status === "todo"
+              ? "bg-gray-200 text-gray-700"
+              : status === "inProgress"
+              ? "bg-yellow-200 text-yellow-800"
+              : "bg-green-200 text-green-800"
+          }
+        `}
+      >
+        {columnTasks.length}
+      </span>
+    </div>
+  }
+  className="
+    rounded-3xl
+    p-5
+    min-h-[320px]
+
+    bg-white/50
+    backdrop-blur-2xl
+
+    border border-white/20
+
+    shadow-[0_10px_40px_rgba(0,0,0,0.10)]
+
+    transition-all duration-300
+
+    hover:-translate-y-1
+    hover:shadow-2xl
+  "
+>
                 <SortableContext
                   items={columnTasks.map(
                     (task) =>
@@ -538,19 +598,27 @@ const InterviewTaskList = () => {
                     ) : columnTasks.length ? (
                       columnTasks.map(
                         (task) => (
-                          <TaskCard
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
                             key={task.id}
-                            task={task}
-                            isPastDay={
-                              isPastDay
-                            }
-                            onStatusChange={
-                              updateStatus
-                            }
-                            onDelete={
-                              handleDelete
-                            }
-                          />
+                          >
+                            <TaskCard
+                              task={task}
+                              isPastDay={
+                                isPastDay
+                              }
+                              onStatusChange={
+                                updateStatus
+                              }
+                              onDelete={
+                                handleDelete
+                              }
+                            />
+                          </motion.div>
                         )
                       )
                     ) : (
@@ -603,7 +671,7 @@ const InterviewTaskList = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
