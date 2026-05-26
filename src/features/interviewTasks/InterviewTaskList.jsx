@@ -1,14 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useMemo,
-  useState,
-  useEffect,
-} from "react";
+import { useMemo, useState, useEffect } from "react";
 
-import {
-  DndContext,
-  closestCorners,
-} from "@dnd-kit/core";
+import { DndContext, closestCorners } from "@dnd-kit/core";
 
 import {
   SortableContext,
@@ -47,37 +40,28 @@ const InterviewTaskList = () => {
 
   const user = auth.currentUser;
 
-  const allTasks = useSelector(
-    (state) => state.interviewTasks
-  );
+  const allTasks = useSelector((state) => state.interviewTasks);
 
   const interviewTasks = useMemo(() => {
     if (!user) return [];
 
-    return allTasks.filter(
-      (task) => task.userId === user.uid
-    );
+    return allTasks.filter((task) => task.userId === user.uid);
   }, [allTasks, user]);
 
-  const [selectedDate, setSelectedDate] =
-    useState(getLocalDate());
+  const [selectedDate, setSelectedDate] = useState(getLocalDate());
 
-  const [showWeeklySummary, setShowWeeklySummary] =
-    useState(false);
+  const [showWeeklySummary, setShowWeeklySummary] = useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [filter, setFilter] =
-    useState("all");
+  const [filter, setFilter] = useState("all");
 
   // ✅ local board state
-  const [boardTasks, setBoardTasks] =
-    useState({
-      todo: [],
-      inProgress: [],
-      done: [],
-    });
+  const [boardTasks, setBoardTasks] = useState({
+    todo: [],
+    inProgress: [],
+    done: [],
+  });
 
   const today = getLocalDate();
 
@@ -107,82 +91,50 @@ const InterviewTaskList = () => {
     return interviewTasks
       .filter((t) => t.date === selectedDate)
       .filter((t) => {
-        if (filter === "completed")
-          return t.status === "done";
+        if (filter === "completed") return t.status === "done";
 
-        if (filter === "pending")
-          return t.status !== "done";
+        if (filter === "pending") return t.status !== "done";
 
         return true;
       })
       .sort((a, b) => {
-        const aPriority =
-          a.priority || "medium";
+        const aPriority = a.priority || "medium";
 
-        const bPriority =
-          b.priority || "medium";
+        const bPriority = b.priority || "medium";
 
-        return (
-          priorityOrder[aPriority] -
-          priorityOrder[bPriority]
-        );
+        return priorityOrder[aPriority] - priorityOrder[bPriority];
       });
-  }, [
-    interviewTasks,
-    selectedDate,
-    filter,
-  ]);
+  }, [interviewTasks, selectedDate, filter]);
 
   // ✅ sync board state
   useEffect(() => {
     setBoardTasks({
-      todo: filteredTasks.filter(
-        (t) => t.status === "todo"
-      ),
+      todo: filteredTasks.filter((t) => t.status === "todo"),
 
-      inProgress: filteredTasks.filter(
-        (t) => t.status === "inProgress"
-      ),
+      inProgress: filteredTasks.filter((t) => t.status === "inProgress"),
 
-      done: filteredTasks.filter(
-        (t) => t.status === "done"
-      ),
+      done: filteredTasks.filter((t) => t.status === "done"),
     });
   }, [filteredTasks, interviewTasks]);
 
-  const unfinishedYesterdayTasks =
-    useMemo(
-      () =>
-        interviewTasks.filter(
-          (t) =>
-            t.date === yesterday &&
-            t.status === "todo"
-        ),
-      [interviewTasks, yesterday]
-    );
+  const unfinishedYesterdayTasks = useMemo(
+    () =>
+      interviewTasks.filter((t) => t.date === yesterday && t.status === "todo"),
+    [interviewTasks, yesterday]
+  );
 
-  const completedTasks =
-    filteredTasks.filter(
-      (t) => t.status === "done"
-    ).length;
+  const completedTasks = filteredTasks.filter(
+    (t) => t.status === "done"
+  ).length;
 
-  const currentWeekId =
-    getWeekId(today);
+  const currentWeekId = getWeekId(today);
 
   const weeklyTasks = useMemo(
-    () =>
-      interviewTasks.filter(
-        (t) =>
-          getWeekId(t.date) ===
-          currentWeekId
-      ),
+    () => interviewTasks.filter((t) => getWeekId(t.date) === currentWeekId),
     [interviewTasks, currentWeekId]
   );
 
-  const updateStatus = (
-    id,
-    status
-  ) => {
+  const updateStatus = (id, status) => {
     dispatch(
       editInterviewTask({
         id,
@@ -194,47 +146,33 @@ const InterviewTaskList = () => {
   const handleDelete = async (id) => {
     try {
       // delete from firebase
-      await deleteTaskFromFirebase(
-        user,
-        id
-      );
+      await deleteTaskFromFirebase(user, id);
 
       // delete from redux
-      dispatch(
-        deleteInterviewTask({ id })
-      );
+      dispatch(deleteInterviewTask({ id }));
     } catch (error) {
       console.error(error);
     }
   };
 
-  const rolloverUnfinishedTasks =
-    () => {
-      if (
-        !unfinishedYesterdayTasks.length ||
-        !user
-      )
-        return;
+  const rolloverUnfinishedTasks = () => {
+    if (!unfinishedYesterdayTasks.length || !user) return;
 
-      unfinishedYesterdayTasks.forEach(
-        (task) => {
-          dispatch(
-            addInterviewTask({
-              ...task,
-              userId: user.uid,
-              id: crypto.randomUUID(),
-              date: today,
-              status: "todo",
-              isRolledOver: true,
-              createdAt:
-                new Date().toISOString(),
-              updatedAt:
-                new Date().toISOString(),
-            })
-          );
-        }
+    unfinishedYesterdayTasks.forEach((task) => {
+      dispatch(
+        addInterviewTask({
+          ...task,
+          userId: user.uid,
+          id: crypto.randomUUID(),
+          date: today,
+          status: "todo",
+          isRolledOver: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
       );
-    };
+    });
+  };
 
   // ✅ FULL DRAG LOGIC
   const handleDragEnd = (event) => {
@@ -251,11 +189,9 @@ const InterviewTaskList = () => {
     let targetColumn = null;
 
     for (const column in boardTasks) {
-      const hasActiveTask =
-        boardTasks[column].find(
-          (task) =>
-            task.id === activeId
-        );
+      const hasActiveTask = boardTasks[column].find(
+        (task) => task.id === activeId
+      );
 
       if (hasActiveTask) {
         sourceColumn = column;
@@ -267,82 +203,49 @@ const InterviewTaskList = () => {
       }
 
       // dropped on task
-      const hasOverTask =
-        boardTasks[column].find(
-          (task) =>
-            task.id === overId
-        );
+      const hasOverTask = boardTasks[column].find((task) => task.id === overId);
 
       if (hasOverTask) {
         targetColumn = column;
       }
     }
 
-    if (
-      !sourceColumn ||
-      !targetColumn
-    )
-      return;
+    if (!sourceColumn || !targetColumn) return;
 
     // ✅ same column reorder
-    if (
-      sourceColumn === targetColumn
-    ) {
-      const oldIndex =
-        boardTasks[
-          sourceColumn
-        ].findIndex(
-          (task) =>
-            task.id === activeId
-        );
+    if (sourceColumn === targetColumn) {
+      const oldIndex = boardTasks[sourceColumn].findIndex(
+        (task) => task.id === activeId
+      );
 
-      const newIndex =
-        boardTasks[
-          targetColumn
-        ].findIndex(
-          (task) =>
-            task.id === overId
-        );
+      const newIndex = boardTasks[targetColumn].findIndex(
+        (task) => task.id === overId
+      );
 
-      if (oldIndex === newIndex)
-        return;
+      if (oldIndex === newIndex) return;
 
       setBoardTasks((prev) => ({
         ...prev,
 
-        [sourceColumn]: arrayMove(
-          prev[sourceColumn],
-          oldIndex,
-          newIndex
-        ),
+        [sourceColumn]: arrayMove(prev[sourceColumn], oldIndex, newIndex),
       }));
 
       return;
     }
 
     // ✅ move between columns
-    const sourceTasks = [
-      ...boardTasks[sourceColumn],
-    ];
+    const sourceTasks = [...boardTasks[sourceColumn]];
 
-    const targetTasks = [
-      ...boardTasks[targetColumn],
-    ];
+    const targetTasks = [...boardTasks[targetColumn]];
 
-    const activeTask =
-      sourceTasks.find(
-        (task) =>
-          task.id === activeId
-      );
+    const activeTask = sourceTasks.find((task) => task.id === activeId);
 
     if (!activeTask) return;
 
     // remove from source
-    const filteredSourceTasks =
-      sourceTasks.filter(
-        (task) =>
-          task.id !== activeId
-      );
+    const filteredSourceTasks = sourceTasks.filter(
+      (task) => task.id !== activeId
+    );
 
     // update status
     const updatedTask = {
@@ -357,11 +260,9 @@ const InterviewTaskList = () => {
     setBoardTasks((prev) => ({
       ...prev,
 
-      [sourceColumn]:
-        filteredSourceTasks,
+      [sourceColumn]: filteredSourceTasks,
 
-      [targetColumn]:
-        targetTasks,
+      [targetColumn]: targetTasks,
     }));
 
     // persist redux
@@ -386,13 +287,8 @@ const InterviewTaskList = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
           isToday={isToday}
-          hasUnfinishedYesterday={
-            unfinishedYesterdayTasks.length >
-            0
-          }
-          onRollover={
-            rolloverUnfinishedTasks
-          }
+          hasUnfinishedYesterday={unfinishedYesterdayTasks.length > 0}
+          onRollover={rolloverUnfinishedTasks}
         />
 
         <DatePicker
@@ -418,9 +314,7 @@ const InterviewTaskList = () => {
         >
           <DailyProgress
             completed={completedTasks}
-            total={
-              filteredTasks.length
-            }
+            total={filteredTasks.length}
           />
         </motion.div>
       )}
@@ -428,9 +322,7 @@ const InterviewTaskList = () => {
       {/* Section Header */}
       <div className="border-b pb-3">
         <h2 className="text-xl font-semibold text-gray-800">
-          {isToday
-            ? "Today's Interview Tasks"
-            : `Tasks on ${selectedDate}`}
+          {isToday ? "Today's Interview Tasks" : `Tasks on ${selectedDate}`}
         </h2>
 
         <p className="text-sm text-gray-500 mt-1">
@@ -442,15 +334,11 @@ const InterviewTaskList = () => {
 
       {/* Filters */}
       <div>
-        <p className="text-sm text-gray-500 mb-2">
-          Filter tasks
-        </p>
+        <p className="text-sm text-gray-500 mb-2">Filter tasks</p>
 
         <div className="flex gap-2 mb-4">
           <button
-            onClick={() =>
-              setFilter("all")
-            }
+            onClick={() => setFilter("all")}
             className={`
   px-4 py-2 rounded-xl
   transition-all duration-300
@@ -459,20 +347,18 @@ const InterviewTaskList = () => {
   shadow-sm
   hover:scale-[1.03]
   hover:shadow-lg
-  ${filter === "all"
-                ? "bg-blue-500 text-white"
-                : "bg-white/60 text-gray-700 hover:bg-white"}
+  ${
+    filter === "all"
+      ? "bg-blue-500 text-white"
+      : "bg-white/60 text-gray-700 hover:bg-white"
+  }
 `}
           >
             All
           </button>
 
           <button
-            onClick={() =>
-              setFilter(
-                "completed"
-              )
-            }
+            onClick={() => setFilter("completed")}
             className={`
   px-4 py-2 rounded-xl
   transition-all duration-300
@@ -481,18 +367,18 @@ const InterviewTaskList = () => {
   shadow-sm
   hover:scale-[1.03]
   hover:shadow-lg
-  ${filter === "completed"
-                ? "bg-blue-500 text-white"
-                : "bg-white/60 text-gray-700 hover:bg-white"}
+  ${
+    filter === "completed"
+      ? "bg-blue-500 text-white"
+      : "bg-white/60 text-gray-700 hover:bg-white"
+  }
 `}
           >
             Completed
           </button>
 
           <button
-            onClick={() =>
-              setFilter("pending")
-            }
+            onClick={() => setFilter("pending")}
             className={`
   px-4 py-2 rounded-xl
   transition-all duration-300
@@ -501,9 +387,11 @@ const InterviewTaskList = () => {
   shadow-sm
   hover:scale-[1.03]
   hover:shadow-lg
-  ${filter === "pending"
-                ? "bg-blue-500 text-white"
-                : "bg-white/60 text-gray-700 hover:bg-white"}
+  ${
+    filter === "pending"
+      ? "bg-blue-500 text-white"
+      : "bg-white/60 text-gray-700 hover:bg-white"
+  }
 `}
           >
             Pending
@@ -512,39 +400,27 @@ const InterviewTaskList = () => {
       </div>
 
       {/* ✅ Kanban Board */}
-      <DndContext
-        collisionDetection={
-          closestCorners
-        }
-        onDragEnd={
-          handleDragEnd
-        }
-      >
+      <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            "todo",
-            "inProgress",
-            "done",
-          ].map((status) => {
-            const columnTasks =
-              boardTasks[status];
+          {["todo", "inProgress", "done"].map((status) => {
+            const columnTasks = boardTasks[status];
 
             return (
               <BoardColumn
-  key={status}
-  id={status}
-  title={
-    <div className="flex items-center gap-2">
-      <span>
-        {status === "todo"
-          ? "Todo"
-          : status === "inProgress"
-          ? "In Progress"
-          : "Done"}
-      </span>
+                key={status}
+                id={status}
+                title={
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {status === "todo"
+                        ? "Todo"
+                        : status === "inProgress"
+                        ? "In Progress"
+                        : "Done"}
+                    </span>
 
-      <span
-        className={`
+                    <span
+                      className={`
           text-xs
           px-2 py-0.5
           rounded-full
@@ -558,69 +434,82 @@ const InterviewTaskList = () => {
               : "bg-green-200 text-green-800"
           }
         `}
-      >
-        {columnTasks.length}
-      </span>
-    </div>
-  }
-  className="
-    rounded-3xl
-    p-5
-    min-h-[320px]
-
-    bg-white/50
-    backdrop-blur-2xl
-
-    border border-white/20
-
-    shadow-[0_10px_40px_rgba(0,0,0,0.10)]
-
-    transition-all duration-300
-
-    hover:-translate-y-1
-    hover:shadow-2xl
-  "
->
-                <SortableContext
-                  items={columnTasks.map(
-                    (task) =>
-                      task.id
-                  )}
-                  strategy={
-                    verticalListSortingStrategy
+                    >
+                      {columnTasks.length}
+                    </span>
+                  </div>
+                }
+                className={`
+                  rounded-[28px]
+                  p-5
+                  min-h-[340px]
+                  
+                  backdrop-blur-2xl
+                  
+                  border border-white/30
+                  
+                  transition-all duration-500
+                  
+                  hover:-translate-y-2
+                  hover:scale-[1.01]
+                  
+                  shadow-[0_10px_35px_rgba(0,0,0,0.08)]
+                  
+                  ${
+                    status === "todo"
+                      ? `
+                        bg-gradient-to-br
+                        from-slate-50
+                        via-white
+                        to-slate-100
+                  
+                        hover:shadow-slate-300/30
+                      `
+                      : status === "inProgress"
+                      ? `
+                        bg-gradient-to-br
+                        from-yellow-50
+                        via-orange-50
+                        to-amber-100
+                  
+                        hover:shadow-yellow-300/30
+                      `
+                      : `
+                        bg-gradient-to-br
+                        from-emerald-50
+                        via-green-50
+                        to-teal-100
+                  
+                        hover:shadow-emerald-300/30
+                      `
                   }
+                  `}
+              >
+                <SortableContext
+                  items={columnTasks.map((task) => task.id)}
+                  strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-4">
                     {loading ? (
-                      <div className="text-sm text-gray-400">
-                        Loading...
-                      </div>
+                      <div className="text-sm text-gray-400">Loading...</div>
                     ) : columnTasks.length ? (
-                      columnTasks.map(
-                        (task) => (
-                          <motion.div
-                            layout
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.25 }}
-                            key={task.id}
-                          >
-                            <TaskCard
-                              task={task}
-                              isPastDay={
-                                isPastDay
-                              }
-                              onStatusChange={
-                                updateStatus
-                              }
-                              onDelete={
-                                handleDelete
-                              }
-                            />
-                          </motion.div>
-                        )
-                      )
+                      columnTasks.map((task) => (
+                        <motion.div
+                          layout
+                          initial={{ opacity: 0, scale: 0.96 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          key={task.id}
+                        >
+                          <TaskCard
+                            task={task}
+                            isPastDay={isPastDay}
+                            onStatusChange={updateStatus}
+                            onDelete={handleDelete}
+                          />
+                        </motion.div>
+                      ))
                     ) : (
                       <div className="text-sm text-gray-400 text-center py-6">
                         No tasks
@@ -639,35 +528,22 @@ const InterviewTaskList = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800">
             Weekly Summary
-
             <span className="ml-2 text-sm text-gray-500">
               ({currentWeekId})
             </span>
           </h2>
 
           <button
-            onClick={() =>
-              setShowWeeklySummary(
-                (prev) =>
-                  !prev
-              )
-            }
+            onClick={() => setShowWeeklySummary((prev) => !prev)}
             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
           >
-            {showWeeklySummary
-              ? "Hide"
-              : "View"}
+            {showWeeklySummary ? "Hide" : "View"}
           </button>
         </div>
 
         {showWeeklySummary && (
           <div className="mt-4 bg-white rounded-xl shadow-sm p-4 border">
-            <WeeklySummary
-              tasks={weeklyTasks}
-              weekId={
-                currentWeekId
-              }
-            />
+            <WeeklySummary tasks={weeklyTasks} weekId={currentWeekId} />
           </div>
         )}
       </div>
