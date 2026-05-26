@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const TextField = ({
   label,
   value,
@@ -10,69 +12,213 @@ const TextField = ({
   rightIcon,
 }) => {
   return (
-    <div className={`flex flex-col gap-1.5 ${fullWidth ? "w-full" : ""}`}>
-      
+    <motion.div
+      layout
+
+      initial={{
+        opacity: 0,
+        y: 8,
+      }}
+
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+
+      transition={{
+        duration: 0.25,
+      }}
+
+      className={`
+        flex
+        flex-col
+        gap-1.5
+
+        ${fullWidth ? "w-full" : ""}
+      `}
+    >
       {/* 🔷 Label */}
       {label && (
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <motion.label
+          layout
+
+          className="
+            text-xs
+            font-semibold
+            text-gray-500
+            uppercase
+            tracking-wide
+          "
+        >
           {label}
-        </label>
+        </motion.label>
       )}
 
       {/* 🔷 Input Wrapper */}
-      <div className="relative">
-        
+      <motion.div
+        whileHover={{
+          y: -1,
+        }}
+
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 20,
+        }}
+
+        className="relative"
+      >
         {/* Left Icon */}
         {leftIcon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+          <motion.span
+            animate={{
+              opacity: 1,
+            }}
+
+            className="
+              absolute
+              left-3
+              top-1/2
+              -translate-y-1/2
+
+              text-gray-400
+              text-sm
+            "
+          >
             {leftIcon}
-          </span>
+          </motion.span>
         )}
 
         {/* Input */}
-        <input
+        <motion.input
           value={value}
           onChange={onChange}
           {...inputProps}
+
+          whileFocus={{
+            scale: 1.01,
+          }}
+
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 18,
+          }}
+
           className={`
-            w-full rounded-xl border bg-white text-sm text-gray-800
-            transition-all duration-200 outline-none shadow-sm
+            w-full
+
+            rounded-2xl
+
+            border
+
+            bg-white/80
+            backdrop-blur-xl
+
+            text-sm
+            text-gray-800
+
+            transition-all
+            duration-300
+
+            outline-none
+
+            shadow-[0_6px_25px_rgba(0,0,0,0.05)]
+
             placeholder:text-gray-400
-            
-            ${leftIcon ? "pl-9" : "pl-3"} 
-            ${rightIcon ? "pr-9" : "pr-3"} 
-            py-2.5
+
+            ${
+              leftIcon
+                ? "pl-10"
+                : "pl-4"
+            }
+
+            ${
+              rightIcon
+                ? "pr-10"
+                : "pr-4"
+            }
+
+            py-3
 
             ${
               error
-                ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                : "border-gray-200 focus:border-indigo-500 focus:ring-indigo-100 hover:border-gray-300"
+                ? `
+                  border-red-300
+
+                  focus:border-red-400
+                  focus:ring-red-100
+                `
+                : `
+                  border-white/30
+
+                  hover:border-indigo-200
+
+                  focus:border-indigo-400
+                  focus:ring-indigo-100
+                `
             }
 
-            focus:ring-2
-            disabled:bg-gray-100 disabled:cursor-not-allowed
+            focus:ring-4
+
+            disabled:bg-gray-100
+            disabled:cursor-not-allowed
           `}
         />
 
         {/* Right Icon */}
         {rightIcon && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+          <motion.span
+            animate={{
+              opacity: 1,
+            }}
+
+            className="
+              absolute
+              right-3
+              top-1/2
+              -translate-y-1/2
+
+              text-gray-400
+              text-sm
+            "
+          >
             {rightIcon}
-          </span>
+          </motion.span>
         )}
-      </div>
+      </motion.div>
 
       {/* 🔷 Helper / Error */}
       {(helperText || error) && (
-        <p
-          className={`text-xs ${
-            error ? "text-red-500" : "text-gray-500"
-          }`}
+        <motion.p
+          initial={{
+            opacity: 0,
+            y: -3,
+          }}
+
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+
+          transition={{
+            duration: 0.2,
+          }}
+
+          className={`
+            text-xs
+
+            ${
+              error
+                ? "text-red-500"
+                : "text-gray-500"
+            }
+          `}
         >
           {error || helperText}
-        </p>
+        </motion.p>
       )}
-    </div>
+    </motion.div>
   );
 };
 

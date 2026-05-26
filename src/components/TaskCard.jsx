@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -33,7 +35,8 @@ const TaskCard = ({
 
   const priorityColor = {
     high: "bg-red-100 text-red-700",
-    medium: "bg-yellow-100 text-yellow-700",
+    medium:
+      "bg-yellow-100 text-yellow-700",
     low: "bg-green-100 text-green-700",
   };
 
@@ -45,47 +48,170 @@ const TaskCard = ({
   };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
       style={style}
-      className={`group rounded-xl p-4 flex flex-col gap-3 transition-all duration-200 border cursor-grab active:cursor-grabbing ${isDragging
-        ? "opacity-50 scale-105 rotate-1 shadow-2xl z-50"
-        : ""
-        } ${isPastDay
-          ? "bg-gray-50 border-gray-200 opacity-70"
-          : "bg-white border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1"
-        }`}
+
+      layout
+
+      whileHover={{
+        y: -4,
+        scale: 1.01,
+      }}
+
+      whileTap={{
+        scale: 0.98,
+      }}
+
+      animate={{
+        scale: isDragging ? 1.04 : 1,
+        rotate: isDragging ? 1.5 : 0,
+        opacity: isDragging ? 0.85 : 1,
+      }}
+
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      }}
+
+      className={`
+        group
+        rounded-2xl
+        p-4
+
+        flex
+        flex-col
+        gap-3
+
+        transition-all
+        duration-300
+
+        border
+        backdrop-blur-xl
+
+        cursor-grab
+        active:cursor-grabbing
+
+        ${
+          isDragging
+            ? `
+              z-50
+              ring-2
+              ring-blue-200
+
+              shadow-[0_25px_60px_rgba(59,130,246,0.25)]
+            `
+            : ""
+        }
+
+        ${
+          isPastDay
+            ? `
+              bg-gray-50/80
+              border-gray-200
+              opacity-70
+            `
+            : `
+              bg-white/80
+              border-white/30
+
+              shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+
+              hover:shadow-[0_15px_45px_rgba(59,130,246,0.12)]
+            `
+        }
+      `}
     >
-      {/* 🔷 Header */}
+      {/* 🔷 Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className="self-end cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+        className="
+          self-end
+
+          cursor-grab
+          active:cursor-grabbing
+
+          text-gray-400
+          hover:text-blue-500
+
+          transition-colors
+        "
       >
         ☰
       </div>
-      <div className="flex justify-between items-start">
-        <h3 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-indigo-600 transition">
+
+      {/* 🔷 Header */}
+      <div className="flex justify-between items-start gap-3">
+        <h3
+          className="
+            font-semibold
+            text-gray-900
+            text-sm
+            leading-snug
+
+            transition-colors
+
+            group-hover:text-indigo-600
+          "
+        >
           {task.question}
         </h3>
 
         {/* Priority badge */}
         <span
-          className={`text-xs px-2 py-0.5 rounded-md font-medium capitalize ${priorityColor[priority] ||
-            "bg-gray-100 text-gray-600"
-            }`}
+          className={`
+            text-xs
+            px-2.5
+            py-1
+
+            rounded-full
+
+            font-medium
+            capitalize
+
+            shadow-sm
+
+            ${
+              priorityColor[
+                priority
+              ] ||
+              "bg-gray-100 text-gray-600"
+            }
+          `}
         >
           {priority}
         </span>
       </div>
 
       {/* 🔷 Tech Stack */}
-      <div className="flex items-center gap-2 text-xs">
-        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 font-medium">
+      <div className="flex items-center gap-2 text-xs flex-wrap">
+        <span
+          className="
+            px-2.5
+            py-1
+
+            rounded-full
+
+            bg-gradient-to-r
+            from-slate-100
+            to-slate-200
+
+            text-gray-700
+            font-medium
+          "
+        >
           {techStack}
         </span>
 
-        <span className={`font-medium ${statusColor[status]}`}>
+        <span
+          className={`
+            font-medium
+
+            ${statusColor[status]}
+          `}
+        >
           ● {status}
         </span>
       </div>
@@ -107,7 +233,19 @@ const TaskCard = ({
 
       {/* 🔷 Actions */}
       {!isPastDay && (
-        <div className="flex justify-between items-center pt-2 border-t">
+        <div
+          className="
+            flex
+            justify-between
+            items-center
+
+            pt-3
+            mt-1
+
+            border-t
+            border-gray-100
+          "
+        >
           <div className="flex gap-2">
             {status === "todo" && (
               <button
@@ -119,13 +257,28 @@ const TaskCard = ({
                     "inProgress"
                   );
                 }}
-                className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                className="
+                  text-xs
+
+                  px-3
+                  py-1.5
+
+                  rounded-lg
+
+                  bg-blue-50
+                  text-blue-600
+
+                  hover:bg-blue-100
+
+                  transition-all
+                "
               >
                 ▶ Start
               </button>
             )}
 
-            {status === "inProgress" && (
+            {status ===
+              "inProgress" && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -135,7 +288,21 @@ const TaskCard = ({
                     "done"
                   );
                 }}
-                className="text-xs px-2 py-1 rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition"
+                className="
+                  text-xs
+
+                  px-3
+                  py-1.5
+
+                  rounded-lg
+
+                  bg-green-50
+                  text-green-600
+
+                  hover:bg-green-100
+
+                  transition-all
+                "
               >
                 ✓ Done
               </button>
@@ -145,21 +312,49 @@ const TaskCard = ({
           <div className="flex gap-2">
             <Link
               to={`/edit-task/${task.id}`}
-              className="text-xs px-2 py-1 rounded-md text-blue-600 hover:bg-blue-50 transition"
+              className="
+                text-xs
+
+                px-2.5
+                py-1.5
+
+                rounded-lg
+
+                text-blue-600
+
+                hover:bg-blue-50
+
+                transition-all
+              "
             >
               ✏
             </Link>
 
             <button
-              onClick={() => onDelete(task.id)}
-              className="text-xs px-2 py-1 rounded-md text-red-600 hover:bg-red-50 transition"
+              onClick={() =>
+                onDelete(task.id)
+              }
+              className="
+                text-xs
+
+                px-2.5
+                py-1.5
+
+                rounded-lg
+
+                text-red-600
+
+                hover:bg-red-50
+
+                transition-all
+              "
             >
               🗑
             </button>
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
