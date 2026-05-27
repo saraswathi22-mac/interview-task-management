@@ -15,8 +15,12 @@ export const getWeeklyStats = (tasks = []) => {
 
 export const groupByKey = (tasks = [], key) => {
   return tasks.reduce((acc, task) => {
-    const value = task[key] ?? "unknown";
+    const value = task[key]?.toLowerCase();
+
+    if (!value) return acc;
+
     acc[value] = (acc[value] || 0) + 1;
+
     return acc;
   }, {});
 };

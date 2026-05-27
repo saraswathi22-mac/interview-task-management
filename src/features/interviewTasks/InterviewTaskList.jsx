@@ -524,10 +524,10 @@ const InterviewTaskList = () => {
       </DndContext>
 
       {/* Weekly Summary */}
-      <div className="pt-8 border-t">
+      <div className="pt-10 mt-10 border-t border-gray-100">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800">
-            Weekly Summary
+            📊 Weekly Analytics
             <span className="ml-2 text-sm text-gray-500">
               ({currentWeekId})
             </span>
@@ -542,7 +542,7 @@ const InterviewTaskList = () => {
         </div>
 
         {showWeeklySummary && (
-          <div className="mt-4 bg-white rounded-xl shadow-sm p-4 border">
+          <div className="mt-5 rounded-3xl border border-gray-100 bg-white p-6 md:p-7 shadow-sm">
             <WeeklySummary tasks={weeklyTasks} weekId={currentWeekId} />
           </div>
         )}
