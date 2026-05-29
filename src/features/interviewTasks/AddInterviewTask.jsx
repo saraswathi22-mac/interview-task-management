@@ -48,7 +48,9 @@ const AddInterviewTask = () => {
 
     toast.success("Interview task added");
 
-    navigate("/");
+    setTimeout(() => {
+      navigate("/");
+    }, 800);
   };
 
   return (
@@ -113,9 +115,9 @@ const AddInterviewTask = () => {
                 }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 capitalize transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
-                <option value="low">Low 🟢</option>
+                <option value="low">Easy 🟢</option>
                 <option value="medium">Medium 🟡</option>
-                <option value="high">High 🔴</option>
+                <option value="high">Hard 🔴</option>
               </select>
             </div>
           </div>
