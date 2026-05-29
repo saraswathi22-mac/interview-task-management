@@ -332,7 +332,7 @@ const TaskCard = ({
 
             <button
               onClick={() =>
-                onDelete(task.id)
+                onDelete(task)
               }
               className="
                 text-xs

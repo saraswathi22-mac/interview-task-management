@@ -145,16 +145,26 @@ const InterviewTaskList = () => {
     );
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (task) => {
     try {
-      // delete from firebase
-      await deleteTaskFromFirebase(user, id);
-
       // delete from redux
-      dispatch(deleteInterviewTask({ id }));
+      dispatch(deleteInterviewTask({ id: task.id }));
 
-      toast.success("Interview task deleted");
+      // delete from firebase after a delay of 5 seconds to allow for undo
+      const timer = setTimeout(async () => {
+        await deleteTaskFromFirebase(user, task.id);
+      }, 5000);
 
+      toast("Task deleted", {
+        action: {
+          label: "Undo",
+          onClick: () => {
+            clearTimeout(timer);
+
+            dispatch(addInterviewTask(task));
+          },
+        },
+      });
     } catch (error) {
       console.error(error);
 
@@ -173,7 +183,7 @@ const InterviewTaskList = () => {
           id: crypto.randomUUID(),
           date: today,
           status: "todo",
-          isRolledOver: true,
+          isRolledOver: true, 
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
