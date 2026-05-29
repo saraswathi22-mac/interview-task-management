@@ -35,6 +35,8 @@ import { deleteTaskFromFirebase } from "../../firebase/taskStorage";
 
 import { motion } from "framer-motion";
 
+import { toast } from "sonner";
+
 const InterviewTaskList = () => {
   const dispatch = useDispatch();
 
@@ -150,8 +152,13 @@ const InterviewTaskList = () => {
 
       // delete from redux
       dispatch(deleteInterviewTask({ id }));
+
+      toast.success("Interview task deleted");
+
     } catch (error) {
       console.error(error);
+
+      toast.error("Failed to delete task");
     }
   };
 
