@@ -81,7 +81,7 @@ const InterviewTaskList = () => {
     return () => clearTimeout(timer);
   }, [selectedDate]);
 
-  const priorityOrder = {
+  const difficultyOrder = {
     high: 1,
     medium: 2,
     low: 3,
@@ -98,11 +98,11 @@ const InterviewTaskList = () => {
         return true;
       })
       .sort((a, b) => {
-        const aPriority = a.priority || "medium";
+        const aDifficulty = a.difficulty || "medium";
 
-        const bPriority = b.priority || "medium";
+        const bDifficulty = b.difficulty || "medium";
 
-        return priorityOrder[aPriority] - priorityOrder[bPriority];
+        return difficultyOrder[aDifficulty] - difficultyOrder[bDifficulty];
       });
   }, [interviewTasks, selectedDate, filter]);
 

@@ -13,7 +13,7 @@ const TaskCard = ({
 }) => {
   const { techStack, status } = task;
 
-  const priority = task.priority || "medium";
+  const difficulty = task.difficulty || "medium";
 
   // ✅ dnd-kit sortable hook
   const {
@@ -33,7 +33,7 @@ const TaskCard = ({
     transition,
   };
 
-  const priorityColor = {
+  const difficultyColor = {
     high: "bg-red-100 text-red-700",
     medium:
       "bg-yellow-100 text-yellow-700",
@@ -159,7 +159,7 @@ const TaskCard = ({
           {task.question}
         </h3>
 
-        {/* Priority badge */}
+        {/* Difficulty badge */}
         <span
           className={`
             text-xs
@@ -174,14 +174,14 @@ const TaskCard = ({
             shadow-sm
 
             ${
-              priorityColor[
-                priority
+              difficultyColor[
+                difficulty
               ] ||
               "bg-gray-100 text-gray-600"
             }
           `}
         >
-          {priority}
+          {difficulty}
         </span>
       </div>
 
