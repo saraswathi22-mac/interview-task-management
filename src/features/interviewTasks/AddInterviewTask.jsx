@@ -7,6 +7,7 @@ import TextField from "../../components/TextField";
 import { addInterviewTask } from "./interviewTaskSlice";
 import { getLocalDate, getWeekId } from "../../helpers/dateHelpers";
 import { auth } from "../../firebase/config";
+import { toast } from "sonner";
 
 const AddInterviewTask = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const AddInterviewTask = () => {
   const [values, setValues] = useState({
     question: "",
     techStack: "React",
-    priority: "medium",
+    difficulty: "medium",
   });
 
   const handleAddTask = () => {
@@ -36,7 +37,7 @@ const AddInterviewTask = () => {
         weekId: getWeekId(today),
         question: values.question,
         techStack: values.techStack,
-        priority: values.priority,
+        difficulty: values.difficulty,
         status: "todo",
         isRolledOver: false,
         userId: user.uid,
@@ -45,16 +46,16 @@ const AddInterviewTask = () => {
       })
     );
 
+    toast.success("Interview task added");
+
     navigate("/");
   };
 
   return (
     <div className="min-h-[80vh] flex items-start justify-center px-4 py-10 bg-gray-50">
       <div className="w-full max-w-xl">
-
         {/* 🔷 Card */}
         <div className="bg-white shadow-sm border rounded-xl p-6 space-y-6 hover:shadow-md transition">
-
           {/* 🔷 Header */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
@@ -69,9 +70,7 @@ const AddInterviewTask = () => {
           <TextField
             label="Interview Question"
             value={values.question}
-            onChange={(e) =>
-              setValues({ ...values, question: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, question: e.target.value })}
             inputProps={{
               placeholder: "Explain useEffect cleanup with an example",
             }}
@@ -80,7 +79,6 @@ const AddInterviewTask = () => {
 
           {/* 🔷 Dropdowns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             {/* Tech Stack */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700">
@@ -103,15 +101,15 @@ const AddInterviewTask = () => {
               </select>
             </div>
 
-            {/* Priority */}
+            {/* Difficulty */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700">
-                Priority
+                Difficulty
               </label>
               <select
-                value={values.priority}
+                value={values.difficulty}
                 onChange={(e) =>
-                  setValues({ ...values, priority: e.target.value })
+                  setValues({ ...values, difficulty: e.target.value })
                 }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 capitalize transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
@@ -131,10 +129,7 @@ const AddInterviewTask = () => {
               Cancel
             </button>
 
-            <Button
-              onClick={handleAddTask}
-              disabled={!values.question.trim()}
-            >
+            <Button onClick={handleAddTask} disabled={!values.question.trim()}>
               <span className="mr-1 font-bold">+</span>
               Add Task
             </Button>

@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import { editInterviewTask } from "./interviewTaskSlice";
 import { auth } from "../../firebase/config";
+import { toast } from "sonner";
 
 const EditInterviewTask = () => {
   const { id } = useParams();
@@ -49,6 +50,8 @@ const EditInterviewTask = () => {
       })
     );
 
+    toast.success("Interview task updated");
+
     navigate("/");
   };
 
@@ -56,7 +59,6 @@ const EditInterviewTask = () => {
     <div className="min-h-[80vh] flex items-start justify-center px-4 py-10 bg-gray-50">
       <div className="w-full max-w-xl">
         <div className="bg-white border rounded-xl p-6 space-y-6 shadow-sm hover:shadow-md transition">
-
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
               Edit Interview Task
@@ -69,9 +71,7 @@ const EditInterviewTask = () => {
           <TextField
             label="Interview Question"
             value={values.question}
-            onChange={(e) =>
-              setValues({ ...values, question: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, question: e.target.value })}
             inputProps={{
               placeholder: "Explain closures with example",
               autoFocus: true,
