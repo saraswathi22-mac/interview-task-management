@@ -183,7 +183,7 @@ const InterviewTaskList = () => {
           id: crypto.randomUUID(),
           date: today,
           status: "todo",
-          isRolledOver: true, 
+          isRolledOver: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
@@ -191,7 +191,6 @@ const InterviewTaskList = () => {
     });
   };
 
-  // ✅ FULL DRAG LOGIC
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
@@ -291,6 +290,15 @@ const InterviewTaskList = () => {
         },
       })
     );
+
+    // show toast
+    if (targetColumn === "done") {
+      toast.success("🎉 Task completed");
+    } else if (targetColumn === "inProgress") {
+      toast.success("🚀 Task moved to In Progress");
+    } else {
+      toast.success("↩️ Task moved to To Do");
+    }
   };
 
   return (
