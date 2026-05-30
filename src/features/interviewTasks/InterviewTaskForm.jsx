@@ -15,12 +15,16 @@ const InterviewTaskForm = ({
   initialValues,
   submitLabel,
   onSubmit,
+  isEditMode = false,
 }) => {
   const navigate = useNavigate();
 
   const [values, setValues] = useState(initialValues);
 
-  const isChanged = JSON.stringify(values) !== JSON.stringify(initialValues);
+  const isChanged =
+    values.question !== initialValues.question ||
+    values.techStack !== initialValues.techStack ||
+    values.difficulty !== initialValues.difficulty;
 
   const handleSubmit = () => {
     if (!values.question.trim()) return;
@@ -33,9 +37,13 @@ const InterviewTaskForm = ({
       <div className="w-full max-w-xl">
         <div className="bg-white border rounded-xl p-6 space-y-6 shadow-sm hover:shadow-md transition">
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {title}
+            </h2>
 
-            <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {subtitle}
+            </p>
           </div>
 
           <TextField
@@ -48,8 +56,21 @@ const InterviewTaskForm = ({
               })
             }
             inputProps={{
-              placeholder: "Explain useEffect cleanup with an example",
+              placeholder: isEditMode
+                ? "Explain closures with example"
+                : "Explain useEffect cleanup with an example",
+              autoFocus: isEditMode,
             }}
+            helperText={
+              !isEditMode
+                ? "Keep it concise and interview-focused"
+                : undefined
+            }
+            error={
+              isEditMode &&
+              !values.question.trim() &&
+              "Question is required"
+            }
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -66,10 +87,13 @@ const InterviewTaskForm = ({
                     techStack: e.target.value,
                   })
                 }
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
                 {TECH_STACK_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
+                  <option
+                    key={option}
+                    value={option}
+                  >
                     {option}
                   </option>
                 ))}
@@ -89,10 +113,13 @@ const InterviewTaskForm = ({
                     difficulty: e.target.value,
                   })
                 }
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 capitalize transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
                 {DIFFICULTY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </option>
                 ))}
@@ -103,7 +130,7 @@ const InterviewTaskForm = ({
           <div className="flex items-center justify-between pt-2">
             <button
               onClick={() => navigate("/")}
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="text-sm text-gray-500 hover:text-gray-700 transition"
             >
               Cancel
             </button>
@@ -112,7 +139,7 @@ const InterviewTaskForm = ({
               onClick={handleSubmit}
               disabled={
                 !values.question.trim() ||
-                (submitLabel.includes("Save") && !isChanged)
+                (isEditMode && !isChanged)
               }
             >
               {submitLabel}
