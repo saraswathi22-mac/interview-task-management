@@ -1,24 +1,32 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
+
 import { editInterviewTask } from "./interviewTaskSlice";
 import { auth } from "../../firebase/config";
 import { toast } from "sonner";
 
+import {
+  TECH_STACK_OPTIONS,
+  DIFFICULTY_OPTIONS,
+} from "../../constants/interviewTaskOptions";
+
 const EditInterviewTask = () => {
   const { id } = useParams();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = auth.currentUser; // get user
+  const user = auth.currentUser;
 
   const allTasks = useSelector((state) => state.interviewTasks);
 
-  // filter tasks by user
   const interviewTasks = useMemo(() => {
     if (!user) return [];
+
     return allTasks.filter((task) => task.userId === user.uid);
   }, [allTasks, user]);
 
@@ -65,6 +73,7 @@ const EditInterviewTask = () => {
             <h2 className="text-xl font-semibold text-gray-800">
               Edit Interview Task
             </h2>
+
             <p className="text-sm text-gray-500 mt-1">
               Update your task details
             </p>
@@ -73,7 +82,12 @@ const EditInterviewTask = () => {
           <TextField
             label="Interview Question"
             value={values.question}
-            onChange={(e) => setValues({ ...values, question: e.target.value })}
+            onChange={(e) =>
+              setValues({
+                ...values,
+                question: e.target.value,
+              })
+            }
             inputProps={{
               placeholder: "Explain closures with example",
               autoFocus: true,
@@ -82,41 +96,54 @@ const EditInterviewTask = () => {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Tech Stack */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700">
                 Tech Stack
               </label>
+
               <select
                 value={values.techStack}
                 onChange={(e) =>
-                  setValues({ ...values, techStack: e.target.value })
+                  setValues({
+                    ...values,
+                    techStack: e.target.value,
+                  })
                 }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
-                <option value="React">React</option>
-                <option value="JavaScript">JavaScript</option>
-                <option value="TypeScript">TypeScript</option>
-                <option value="HTML/CSS">HTML / CSS</option>
-                <option value="Frontend System Design">
-                  Frontend System Design
-                </option>
+                {TECH_STACK_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 
+            {/* Difficulty */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700">
                 Difficulty
               </label>
+
               <select
                 value={values.difficulty}
                 onChange={(e) =>
-                  setValues({ ...values, difficulty: e.target.value })
+                  setValues({
+                    ...values,
+                    difficulty: e.target.value,
+                  })
                 }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-800 capitalize transition outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               >
-                <option value="easy">Easy 🟢</option>
-                <option value="medium">Medium 🟡</option>
-                <option value="hard">Hard 🔴</option>
+                {DIFFICULTY_OPTIONS.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
