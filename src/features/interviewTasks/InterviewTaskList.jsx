@@ -143,6 +143,14 @@ const InterviewTaskList = () => {
         updates: { status },
       })
     );
+
+    if (status === "done") {
+      toast.success("🎉 Task completed");
+    } else if (status === "inProgress") {
+      toast.success("🚀 Task moved to In Progress");
+    } else {
+      toast.success("↩️ Task moved to To Do");
+    }
   };
 
   const handleDelete = (task) => {
