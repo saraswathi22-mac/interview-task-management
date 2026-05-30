@@ -84,9 +84,9 @@ const InterviewTaskList = () => {
   }, [selectedDate]);
 
   const difficultyOrder = {
-    high: 1,
+    hard: 1,
     medium: 2,
-    low: 3,
+    easy: 3,
   };
 
   const filteredTasks = useMemo(() => {
@@ -121,7 +121,12 @@ const InterviewTaskList = () => {
 
   const unfinishedYesterdayTasks = useMemo(
     () =>
-      interviewTasks.filter((t) => t.date === yesterday && t.status === "todo"),
+      interviewTasks.filter(
+        (t) =>
+          t.date === yesterday &&
+          t.status === "todo" &&
+          !t.isRolledOver
+      ),
     [interviewTasks, yesterday]
   );
 
@@ -182,8 +187,9 @@ const InterviewTaskList = () => {
 
   const rolloverUnfinishedTasks = () => {
     if (!unfinishedYesterdayTasks.length || !user) return;
-
+  
     unfinishedYesterdayTasks.forEach((task) => {
+      // create today's copy
       dispatch(
         addInterviewTask({
           ...task,
@@ -196,8 +202,19 @@ const InterviewTaskList = () => {
           updatedAt: new Date().toISOString(),
         })
       );
+  
+      // mark yesterday's task as rolled over
+      dispatch(
+        editInterviewTask({
+          id: task.id,
+          updates: {
+            isRolledOver: true,
+            updatedAt: new Date().toISOString(),
+          },
+        })
+      );
     });
-
+  
     toast.success(
       `🔄 ${unfinishedYesterdayTasks.length} task${
         unfinishedYesterdayTasks.length > 1 ? "s" : ""
