@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-const DatePicker = ({
-  selectedDate,
-  max,
-  onChange,
-}) => {
+const DatePicker = ({ selectedDate, max, onChange }) => {
   return (
     <motion.div
       initial={{
@@ -23,7 +20,6 @@ const DatePicker = ({
         flex
         flex-col
         gap-2
-
         sm:flex-row
         sm:items-center
       "
@@ -60,74 +56,48 @@ const DatePicker = ({
           type="date"
           value={selectedDate}
           max={max}
-          onChange={(e) =>
-            onChange(e.target.value)
-          }
-
+          onChange={(e) => onChange(e.target.value)}
           whileFocus={{
             scale: 1.01,
           }}
-
           className="
             w-full
             sm:w-auto
-
             appearance-none
-
             rounded-2xl
-
             border border-white/30
-
             bg-gradient-to-br
             from-white
             via-blue-50
             to-purple-50
-
-            px-4
+            pl-4
+            pr-10
             py-2.5
-
             text-sm
             text-gray-700
-
             backdrop-blur-xl
-
             shadow-[0_8px_30px_rgba(59,130,246,0.10)]
-
             transition-all
             duration-300
-
             focus:border-blue-300
             focus:outline-none
             focus:ring-4
             focus:ring-blue-200/50
-
             hover:shadow-[0_12px_40px_rgba(139,92,246,0.15)]
           "
         />
 
-        {/* 📅 Icon */}
-        <motion.span
-          animate={{
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 3,
-          }}
+        <CalendarMonthIcon
+          fontSize="small"
           className="
             pointer-events-none
-
             absolute
             right-3
             top-1/2
-
             -translate-y-1/2
-
-            text-sm
+            text-gray-500
           "
-        >
-          📅
-        </motion.span>
+        />
       </motion.div>
     </motion.div>
   );
