@@ -21,13 +21,15 @@ const InterviewTaskForm = ({
 
   const [values, setValues] = useState(initialValues);
 
+  const questionLength = values.question.trim().length;
+
   const isChanged =
     values.question !== initialValues.question ||
     values.techStack !== initialValues.techStack ||
     values.difficulty !== initialValues.difficulty;
 
   const handleSubmit = () => {
-    if (!values.question.trim()) return;
+    if (questionLength < 5) return;
 
     onSubmit(values);
   };
@@ -56,20 +58,13 @@ const InterviewTaskForm = ({
               })
             }
             inputProps={{
-              placeholder: isEditMode
-                ? "Explain closures with example"
-                : "Explain useEffect cleanup with an example",
+              placeholder: "Add an interview question...",
               autoFocus: isEditMode,
             }}
-            helperText={
-              !isEditMode
-                ? "Keep it concise and interview-focused"
-                : undefined
-            }
             error={
-              isEditMode &&
-              !values.question.trim() &&
-              "Question is required"
+              questionLength > 0 && questionLength < 5
+                ? "Question must be at least 5 characters"
+                : undefined
             }
           />
 
@@ -138,7 +133,7 @@ const InterviewTaskForm = ({
             <Button
               onClick={handleSubmit}
               disabled={
-                !values.question.trim() ||
+                questionLength < 5 ||
                 (isEditMode && !isChanged)
               }
             >
