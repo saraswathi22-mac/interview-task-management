@@ -70,11 +70,11 @@ const BoardColumn = ({
 
         className="
           font-semibold
-          mb-4
+          mb-3 md:mb-4
           capitalize
-          text-lg
-        "
-      >
+          text-base md:text-lg
+        " 
+        >
         {title}
       </motion.h3>
 

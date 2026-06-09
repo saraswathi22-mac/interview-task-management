@@ -515,9 +515,9 @@ const InterviewTaskList = () => {
                     status === "todo"
                       ? `
                         bg-gradient-to-br
-                        from-slate-50
-                        via-white
-                        to-slate-100
+                        from-slate-100
+                        via-slate-50
+                        to-slate-200
                   
                         hover:shadow-slate-300/30
                       `
