@@ -52,7 +52,7 @@ const DailyProgress = ({
 
         backdrop-blur-2xl
 
-        p-6
+        p-3 md:p-6
 
         shadow-[0_10px_40px_rgba(59,130,246,0.10)]
 
