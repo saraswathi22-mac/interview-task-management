@@ -70,10 +70,10 @@ function App() {
     <>
       <Toaster position="top-right" richColors closeButton />
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-blue-50">
         <div className="container mx-auto max-w-5xl px-4 py-10 md:py-16">
           {/* Header */}
-          <header className="mb-6 flex flex-col items-center gap-3 text-center">
+          <header className="mb-4 md:mb-6 flex flex-col items-center gap-3 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
               Interview Prep Planner
             </h1>
@@ -88,15 +88,14 @@ function App() {
               <button
                 onClick={handleLogout}
                 className="
-                flex items-center gap-2
-                px-4 py-2
-                bg-white border border-red-400
-                text-red-500 text-sm font-medium
-                rounded-lg
-                hover:bg-red-50 hover:border-red-500
-                transition-all duration-200
-              "
-              >
+                  flex items-center gap-2
+                  px-4 py-2
+                  bg-white border border-red-400
+                  text-red-500 text-sm font-medium
+                  rounded-lg
+                  hover:bg-red-50 hover:border-red-500
+                  transition-all duration-200"
+                >
                 <span>🚪</span>
                 Logout
               </button>
