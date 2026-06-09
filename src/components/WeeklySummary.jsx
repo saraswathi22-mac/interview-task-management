@@ -46,7 +46,7 @@ const WeeklySummary = ({ tasks }) => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Total" value={stats.total} />
