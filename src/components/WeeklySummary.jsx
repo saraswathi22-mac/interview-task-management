@@ -48,7 +48,7 @@ const WeeklySummary = ({ tasks }) => {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Total" value={stats.total} />
 
         <StatCard label="Done" value={stats.done} color="green" />
@@ -152,7 +152,7 @@ const StatCard = ({ label, value, color = "gray" }) => {
     <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
       <p className="text-xs font-medium text-gray-500">{label}</p>
 
-      <p className={`mt-2 text-2xl font-bold ${colorMap[color]}`}>{value}</p>
+      <p className={`mt-2 text-xl md:text-2xl font-bold ${colorMap[color]}`}>{value}</p>
     </div>
   );
 };

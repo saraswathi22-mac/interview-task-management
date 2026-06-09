@@ -20,7 +20,7 @@ const AddInterviewTask = () => {
 
   const handleAddTask = (values) => {
     if (!user) {
-      alert("Please login first");
+      toast.error("Please login first");
       return;
     }
 
