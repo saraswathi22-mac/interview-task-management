@@ -22,7 +22,7 @@ const TopActions = ({ isToday, hasUnfinishedYesterday, onRollover }) => {
         flex
         flex-wrap
         items-start
-        gap-6
+        gap-4 md:gap-6
       "
     >
       {/* 🔷 Primary Action */}

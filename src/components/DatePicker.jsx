@@ -16,7 +16,7 @@ const DatePicker = ({ selectedDate, max, onChange }) => {
         duration: 0.35,
       }}
       className="
-        mt-6
+        mt-6 sm:mt-0
         flex
         flex-col
         gap-2

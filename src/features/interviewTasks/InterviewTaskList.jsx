@@ -392,7 +392,7 @@ const InterviewTaskList = () => {
       <div>
         <p className="text-sm text-gray-500 mb-2">Filter tasks</p>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => setFilter("all")}
             className={`
@@ -457,7 +457,7 @@ const InterviewTaskList = () => {
 
       {/* ✅ Kanban Board */}
       <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {["todo", "inProgress", "done"].map((status) => {
             const columnTasks = boardTasks[status];
 
