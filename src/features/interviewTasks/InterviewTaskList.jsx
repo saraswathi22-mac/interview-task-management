@@ -30,6 +30,8 @@ import { motion } from "framer-motion";
 
 import { toast } from "sonner";
 import useTaskBoard from "./hooks/useTaskBoard";
+import TaskFilters from "./TaskFilters";
+import { difficultyOrder } from "../../constants/difficultyOrder";
 
 const InterviewTaskList = () => {
   // Redux
@@ -64,12 +66,6 @@ const InterviewTaskList = () => {
     }, 700);
     return () => clearTimeout(timer);
   }, [selectedDate]);
-
-  const difficultyOrder = {
-    hard: 1,
-    medium: 2,
-    easy: 3,
-  };
 
   const filteredTasks = useMemo(() => {
     return interviewTasks
@@ -235,71 +231,7 @@ const InterviewTaskList = () => {
       </div>
 
       {/* Filters */}
-      <div>
-        <p className="text-sm text-gray-500 mb-2">Filter tasks</p>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          <button
-            onClick={() => setFilter("all")}
-            className={`
-  px-4 py-2 rounded-xl
-  transition-all duration-300
-  border border-white/10
-  backdrop-blur-md
-  shadow-sm
-  hover:scale-[1.03]
-  hover:shadow-lg
-  ${
-    filter === "all"
-      ? "bg-blue-500 text-white"
-      : "bg-white/60 text-gray-700 hover:bg-white"
-  }
-`}
-          >
-            All
-          </button>
-
-          <button
-            onClick={() => setFilter("completed")}
-            className={`
-  px-4 py-2 rounded-xl
-  transition-all duration-300
-  border border-white/10
-  backdrop-blur-md
-  shadow-sm
-  hover:scale-[1.03]
-  hover:shadow-lg
-  ${
-    filter === "completed"
-      ? "bg-blue-500 text-white"
-      : "bg-white/60 text-gray-700 hover:bg-white"
-  }
-`}
-          >
-            Completed
-          </button>
-
-          <button
-            onClick={() => setFilter("pending")}
-            className={`
-  px-4 py-2 rounded-xl
-  transition-all duration-300
-  border border-white/10
-  backdrop-blur-md
-  shadow-sm
-  hover:scale-[1.03]
-  hover:shadow-lg
-  ${
-    filter === "pending"
-      ? "bg-blue-500 text-white"
-      : "bg-white/60 text-gray-700 hover:bg-white"
-  }
-`}
-          >
-            Pending
-          </button>
-        </div>
-      </div>
+      <TaskFilters filter={filter} onFilterChange={setFilter} />
 
       {/* ✅ Kanban Board */}
       <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
