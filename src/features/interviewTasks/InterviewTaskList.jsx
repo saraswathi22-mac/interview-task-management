@@ -1,29 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useMemo, useState, useEffect } from "react";
-
 import { DndContext, closestCorners } from "@dnd-kit/core";
-
 import {
   SortableContext,
   verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
-
 import {
   addInterviewTask,
   editInterviewTask,
   deleteInterviewTask,
 } from "./interviewTaskSlice";
-
 import { auth } from "../../firebase/config";
-
 // helpers
 import {
   getLocalDate,
   getYesterday,
   getWeekId,
 } from "../../helpers/dateHelpers";
-
 // components
 import DatePicker from "../../components/DatePicker";
 import DailyProgress from "../../components/DailyProgress";
@@ -36,50 +29,39 @@ import { deleteTaskFromFirebase } from "../../firebase/taskStorage";
 import { motion } from "framer-motion";
 
 import { toast } from "sonner";
+import useTaskBoard from "./hooks/useTaskBoard";
 
 const InterviewTaskList = () => {
+  // Redux
   const dispatch = useDispatch();
-
-  const user = auth.currentUser;
-
   const allTasks = useSelector((state) => state.interviewTasks);
 
+  // Auth
+  const user = auth.currentUser;
+
+  // State
+  const [selectedDate, setSelectedDate] = useState(getLocalDate());
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [showWeeklySummary, setShowWeeklySummary] = useState(false);
+
+  // Derived values
+  const today = getLocalDate();
+  const yesterday = getYesterday();
+  const isToday = selectedDate === today;
+  const isPastDay = selectedDate < today;
+
+  // Memoized data
   const interviewTasks = useMemo(() => {
     if (!user) return [];
-
     return allTasks.filter((task) => task.userId === user.uid);
   }, [allTasks, user]);
 
-  const [selectedDate, setSelectedDate] = useState(getLocalDate());
-
-  const [showWeeklySummary, setShowWeeklySummary] = useState(false);
-
-  const [loading, setLoading] = useState(true);
-
-  const [filter, setFilter] = useState("all");
-
-  // ✅ local board state
-  const [boardTasks, setBoardTasks] = useState({
-    todo: [],
-    inProgress: [],
-    done: [],
-  });
-
-  const today = getLocalDate();
-
-  const yesterday = getYesterday();
-
-  const isToday = selectedDate === today;
-
-  const isPastDay = selectedDate < today;
-
   useEffect(() => {
     setLoading(true);
-
     const timer = setTimeout(() => {
       setLoading(false);
     }, 700);
-
     return () => clearTimeout(timer);
   }, [selectedDate]);
 
@@ -108,24 +90,10 @@ const InterviewTaskList = () => {
       });
   }, [interviewTasks, selectedDate, filter]);
 
-  // ✅ sync board state
-  useEffect(() => {
-    setBoardTasks({
-      todo: filteredTasks.filter((t) => t.status === "todo"),
-
-      inProgress: filteredTasks.filter((t) => t.status === "inProgress"),
-
-      done: filteredTasks.filter((t) => t.status === "done"),
-    });
-  }, [filteredTasks, interviewTasks]);
-
   const unfinishedYesterdayTasks = useMemo(
     () =>
       interviewTasks.filter(
-        (t) =>
-          t.date === yesterday &&
-          t.status === "todo" &&
-          !t.isRolledOver
+        (t) => t.date === yesterday && t.status === "todo" && !t.isRolledOver
       ),
     [interviewTasks, yesterday]
   );
@@ -141,22 +109,10 @@ const InterviewTaskList = () => {
     [interviewTasks, currentWeekId]
   );
 
-  const updateStatus = (id, status) => {
-    dispatch(
-      editInterviewTask({
-        id,
-        updates: { status },
-      })
-    );
-
-    if (status === "done") {
-      toast.success("🎉 Task completed");
-    } else if (status === "inProgress") {
-      toast.success("🚀 Task moved to In Progress");
-    } else {
-      toast.success("↩️ Task moved to To Do");
-    }
-  };
+  const { boardTasks, handleDragEnd, updateStatus } = useTaskBoard({
+    filteredTasks,
+    dispatch,
+  });
 
   const handleDelete = (task) => {
     try {
@@ -187,7 +143,7 @@ const InterviewTaskList = () => {
 
   const rolloverUnfinishedTasks = () => {
     if (!unfinishedYesterdayTasks.length || !user) return;
-  
+
     unfinishedYesterdayTasks.forEach((task) => {
       // create today's copy
       dispatch(
@@ -202,7 +158,7 @@ const InterviewTaskList = () => {
           updatedAt: new Date().toISOString(),
         })
       );
-  
+
       // mark yesterday's task as rolled over
       dispatch(
         editInterviewTask({
@@ -214,122 +170,12 @@ const InterviewTaskList = () => {
         })
       );
     });
-  
+
     toast.success(
       `🔄 ${unfinishedYesterdayTasks.length} task${
         unfinishedYesterdayTasks.length > 1 ? "s" : ""
       } rolled over to today`
     );
-  };
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const activeId = active.id;
-
-    const overId = over.id;
-
-    let sourceColumn = null;
-
-    let targetColumn = null;
-
-    for (const column in boardTasks) {
-      const hasActiveTask = boardTasks[column].find(
-        (task) => task.id === activeId
-      );
-
-      if (hasActiveTask) {
-        sourceColumn = column;
-      }
-
-      // dropped on column
-      if (column === overId) {
-        targetColumn = column;
-      }
-
-      // dropped on task
-      const hasOverTask = boardTasks[column].find((task) => task.id === overId);
-
-      if (hasOverTask) {
-        targetColumn = column;
-      }
-    }
-
-    if (!sourceColumn || !targetColumn) return;
-
-    // ✅ same column reorder
-    if (sourceColumn === targetColumn) {
-      const oldIndex = boardTasks[sourceColumn].findIndex(
-        (task) => task.id === activeId
-      );
-
-      const newIndex = boardTasks[targetColumn].findIndex(
-        (task) => task.id === overId
-      );
-
-      if (oldIndex === newIndex) return;
-
-      setBoardTasks((prev) => ({
-        ...prev,
-
-        [sourceColumn]: arrayMove(prev[sourceColumn], oldIndex, newIndex),
-      }));
-
-      return;
-    }
-
-    // ✅ move between columns
-    const sourceTasks = [...boardTasks[sourceColumn]];
-
-    const targetTasks = [...boardTasks[targetColumn]];
-
-    const activeTask = sourceTasks.find((task) => task.id === activeId);
-
-    if (!activeTask) return;
-
-    // remove from source
-    const filteredSourceTasks = sourceTasks.filter(
-      (task) => task.id !== activeId
-    );
-
-    // update status
-    const updatedTask = {
-      ...activeTask,
-      status: targetColumn,
-    };
-
-    // add to target
-    targetTasks.push(updatedTask);
-
-    // update local state
-    setBoardTasks((prev) => ({
-      ...prev,
-
-      [sourceColumn]: filteredSourceTasks,
-
-      [targetColumn]: targetTasks,
-    }));
-
-    // persist redux
-    dispatch(
-      editInterviewTask({
-        id: activeId,
-        updates: {
-          status: targetColumn,
-        },
-      })
-    );
-
-    // show toast
-    if (targetColumn === "done") {
-      toast.success("🎉 Task completed");
-    } else if (targetColumn === "inProgress") {
-      toast.success("🚀 Task moved to In Progress");
-    } else {
-      toast.success("↩️ Task moved to To Do");
-    }
   };
 
   return (
