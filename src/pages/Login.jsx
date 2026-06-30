@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login, signup } from "../firebase/auth";
+import prepFlow from "../../public/prep-flow.png";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -70,22 +71,35 @@ function Login() {
     setIsLogin((prev) => !prev);
   };
 
+  const BRAND_GREEN = "#5A9C43";
+  const BRAND_GREEN_HOVER = "#4C8A38";
+  const BRAND_YELLOW = "#F7B81B";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-3xl border border-white/60 bg-white/80 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.08)] p-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-4 py-1.5 text-xs font-medium text-blue-700">
-            Track • Practice • Improve
-          </div>
-
-          <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-900">
-            Interview Prep Planner
+        <div className="text-center mb-12">
+          <img
+            src={prepFlow}
+            alt="PrepFlow"
+            className="mx-auto h-16 w-16 object-contain mb-2"
+          />
+          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+            PrepFlow
           </h1>
-
-          <p className="mt-3 text-sm text-slate-500">
-            Master your preparation, one day at a time.
+          <p className="mt-3 text-sm text-slate-600 pb-3">
+            Your interview preparation companion.
           </p>
+          <div className="mt-2 text-sm font-medium">
+            <span style={{ color: BRAND_GREEN }}>Plan</span>
+            <span className="mx-2 text-slate-400">•</span>
+
+            <span className="text-slate-700">Practice</span>
+            <span className="mx-2 text-slate-400">•</span>
+
+            <span style={{ color: BRAND_YELLOW }}>Progress</span>
+          </div>
         </div>
 
         {/* Form Title */}
@@ -132,7 +146,16 @@ function Login() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full rounded-xl bg-slate-900 py-3 font-medium text-white transition-all duration-200 hover:scale-[1.01] hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl py-3 font-medium text-white transition-all duration-200 hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+            style={{
+              backgroundColor: BRAND_GREEN,
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = BRAND_GREEN_HOVER)
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = BRAND_GREEN)
+            }
           >
             {loading
               ? "Please wait..."
@@ -153,7 +176,12 @@ function Login() {
         <div className="mt-8 text-center">
           <button
             onClick={toggleMode}
-            className="text-sm font-medium text-blue-600 transition hover:text-blue-700"
+            className="text-sm font-medium transition"
+            style={{ color: BRAND_GREEN }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = BRAND_GREEN_HOVER)
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.color = BRAND_GREEN)}
           >
             {isLogin
               ? "Don't have an account? Sign up"
