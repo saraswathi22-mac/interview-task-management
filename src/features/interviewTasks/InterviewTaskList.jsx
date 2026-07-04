@@ -110,6 +110,25 @@ const InterviewTaskList = () => {
     dispatch,
   });
 
+  const hour = new Date().getHours();
+
+  const greeting =
+    hour < 12
+      ? "Good Morning"
+      : hour < 18
+        ? "Good Afternoon"
+        : "Good Evening";
+
+  const userName = (
+    user?.displayName ||
+    user?.email?.split("@")[0] ||
+    "User"
+  )
+    .replace(/[._-]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const firstName = userName.split(" ")[0];
+
   const handleDelete = (task) => {
     try {
       // delete from redux
@@ -168,8 +187,7 @@ const InterviewTaskList = () => {
     });
 
     toast.success(
-      `🔄 ${unfinishedYesterdayTasks.length} task${
-        unfinishedYesterdayTasks.length > 1 ? "s" : ""
+      `🔄 ${unfinishedYesterdayTasks.length} task${unfinishedYesterdayTasks.length > 1 ? "s" : ""
       } rolled over to today`
     );
   };
@@ -181,8 +199,19 @@ const InterviewTaskList = () => {
       transition={{ duration: 0.5 }}
       className="mt-6 space-y-10 max-w-6xl mx-auto px-4"
     >
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Welcome Section */}
+      <div className="flex-1">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
+          👋 {greeting}, {firstName}!
+        </h1>
+
+        <p className="mt-2 text-gray-600 leading-relaxed">
+          Stay consistent. Every practice session brings you closer to your next opportunity.
+        </p>
+      </div>
+
+      {/* Action Bar */}
+      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TopActions
           isToday={isToday}
           hasUnfinishedYesterday={unfinishedYesterdayTasks.length > 0}
@@ -249,8 +278,8 @@ const InterviewTaskList = () => {
                       {status === "todo"
                         ? "Todo"
                         : status === "inProgress"
-                        ? "In Progress"
-                        : "Done"}
+                          ? "In Progress"
+                          : "Done"}
                     </span>
 
                     <span
@@ -260,13 +289,12 @@ const InterviewTaskList = () => {
           rounded-full
           font-medium
 
-          ${
-            status === "todo"
-              ? "bg-gray-200 text-gray-700"
-              : status === "inProgress"
-              ? "bg-yellow-200 text-yellow-800"
-              : "bg-green-200 text-green-800"
-          }
+          ${status === "todo"
+                          ? "bg-gray-200 text-gray-700"
+                          : status === "inProgress"
+                            ? "bg-yellow-200 text-yellow-800"
+                            : "bg-green-200 text-green-800"
+                        }
         `}
                     >
                       {columnTasks.length}
@@ -289,9 +317,8 @@ const InterviewTaskList = () => {
                   
                   shadow-[0_10px_35px_rgba(0,0,0,0.08)]
                   
-                  ${
-                    status === "todo"
-                      ? `
+                  ${status === "todo"
+                    ? `
                         bg-gradient-to-br
                         from-slate-100
                         via-slate-50
@@ -299,7 +326,7 @@ const InterviewTaskList = () => {
                   
                         hover:shadow-slate-300/30
                       `
-                      : status === "inProgress"
+                    : status === "inProgress"
                       ? `
                         bg-gradient-to-br
                         from-yellow-50

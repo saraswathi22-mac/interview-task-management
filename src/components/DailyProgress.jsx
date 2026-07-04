@@ -1,25 +1,23 @@
 import { motion } from "framer-motion";
+import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
+import {
+  InsightsRounded,
+  BoltRounded,
+  CelebrationRounded,
+  AssignmentRounded,
+  CheckCircleRounded,
+  TrendingUpRounded,
+} from "@mui/icons-material";
 
-const DailyProgress = ({
-  completed = 0,
-  total = 0,
-}) => {
-  const percent =
-    total === 0
-      ? 0
-      : Math.round(
-          (completed / total) * 100
-        );
+const DailyProgress = ({ completed = 0, total = 0 }) => {
+  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   const getProgressColor = () => {
-    if (percent === 100)
-      return "from-green-500 to-emerald-500";
+    if (percent === 100) return "from-green-500 to-emerald-500";
 
-    if (percent >= 60)
-      return "from-green-400 to-green-500";
+    if (percent >= 60) return "from-green-400 to-green-500";
 
-    if (percent >= 30)
-      return "from-yellow-400 to-orange-400";
+    if (percent >= 30) return "from-yellow-400 to-orange-400";
 
     return "from-red-400 to-pink-500";
   };
@@ -52,7 +50,7 @@ const DailyProgress = ({
 
         backdrop-blur-2xl
 
-        p-3 md:p-6
+        p-4 md:p-6
 
         shadow-[0_10px_40px_rgba(59,130,246,0.10)]
 
@@ -62,7 +60,7 @@ const DailyProgress = ({
       {/* 🔷 Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <motion.span
+          {/* <motion.span
             animate={{
               rotate: [0, 8, -8, 0],
             }}
@@ -73,174 +71,180 @@ const DailyProgress = ({
             className="text-2xl"
           >
             📊
-          </motion.span>
-
+          </motion.span> */}
+          <TrendingUpRounded className="text-violet-600" fontSize="medium" />
           <div>
-            <p className="text-sm font-medium text-gray-500">
-              Daily Progress
-            </p>
-
             <h3 className="text-lg font-bold text-gray-800">
-              Today's Tasks
+              Today's Progress
             </h3>
           </div>
         </div>
 
-        <motion.div
-          key={percent}
-          initial={{
-            scale: 0.8,
-            opacity: 0,
-          }}
-          animate={{
-            scale: 1,
-            opacity: 1,
-          }}
-          className="
-            text-xl
-            font-bold
-
-            bg-gradient-to-r
-            from-indigo-500
-            to-purple-500
-
-            bg-clip-text
-            text-transparent
-          "
-        >
-          {percent}%
-        </motion.div>
+        {total > 0 ? (
+          <motion.div
+            key={percent}
+            initial={{
+              scale: 0.8,
+              opacity: 0,
+            }}
+            animate={{
+              scale: 1,
+              opacity: 1,
+            }}
+            className={`
+  flex items-center justify-center
+  min-w-[84px]
+  h-12
+  rounded-full
+  px-4
+  text-lg
+  font-bold
+  ${
+    percent === 100
+      ? "bg-green-100 text-green-700"
+      : "bg-indigo-50 text-indigo-600"
+  }
+`}
+          >
+            {percent}%
+          </motion.div>
+        ) : (
+          <div
+            className="
+flex items-center justify-center
+h-11
+rounded-full
+bg-violet-100
+px-4
+text-sm
+font-semibold
+text-violet-700
+"
+          >
+            Ready
+          </div>
+        )}
       </div>
 
       {/* 🔷 Progress Bar */}
-      <div className="mt-5">
-        <div
-          className="
-            w-full
-            h-4
-            rounded-full
-
-            bg-white/60
-
-            overflow-hidden
-            relative
-
-            border border-white/30
-          "
-        >
-          {/* Animated Fill */}
-          <motion.div
-            initial={{
-              width: 0,
-            }}
-            animate={{
-              width: `${percent}%`,
-            }}
-            transition={{
-              duration: 0.8,
-              ease: "easeOut",
-            }}
-            className={`
-              h-full
-              rounded-full
-
-              bg-gradient-to-r
-              ${getProgressColor()}
-
-              relative
-            `}
-          >
-            {/* Glow */}
-            <div
-              className="
-                absolute
-                inset-0
-
-                bg-white/20
-
-                blur-md
-              "
-            />
-          </motion.div>
-
-          {/* Shine Effect */}
-          <motion.div
-            animate={{
-              x: ["-100%", "200%"],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 2.5,
-              ease: "linear",
-            }}
+      {total > 0 && (
+        <div className="mt-6">
+          <div
             className="
-              absolute
-              top-0
+        w-full
+        h-3
+        rounded-full
+        bg-white/60
+        overflow-hidden
+        relative
+        border border-white/30
+      "
+          >
+            {/* Animated Fill */}
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${percent}%` }}
+              transition={{
+                duration: 0.8,
+                ease: "easeOut",
+              }}
+              className={`
+          h-full
+          rounded-full
+          bg-gradient-to-r
+          ${getProgressColor()}
+          relative
+        `}
+            >
+              <div
+                className="
+            absolute
+            inset-0
+            bg-white/20
+            blur-md
+          "
+              />
+            </motion.div>
 
-              h-full
-              w-20
-
-              bg-white/20
-              skew-x-12
-            "
-          />
+            {/* Shine Effect */}
+            <motion.div
+              animate={{
+                x: ["-100%", "200%"],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2.5,
+                ease: "linear",
+              }}
+              className="
+          absolute
+          top-0
+          h-full
+          w-20
+          bg-white/20
+          skew-x-12
+        "
+            />
+          </div>
         </div>
+      )}
+
+      {/* Progress Summary */}
+      <div className={`${total > 0 ? "mt-5" : "mt-6"}`}>
+        {total === 0 ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-2.5 py-1 text-sm font-medium text-violet-700">
+            <AssignmentRounded fontSize="small" />
+            No tasks planned for today
+          </span>
+        ) : (
+          <div className="flex flex-wrap gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-sm font-medium text-green-700">
+              <CheckCircleRounded fontSize="small" />
+              {completed} Completed
+            </span>
+
+            {percent < 100 && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-sm font-medium text-blue-700">
+                <AssignmentRounded fontSize="small" />
+                {Math.max(total - completed, 0)} Remaining
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 🔷 Footer */}
-      <div
-        className="
-          mt-5
-          flex
-          items-center
-          justify-between
-          text-sm
-        "
-      >
-        <span className="font-medium text-gray-600">
-          {completed} / {total} completed
-        </span>
-
+      <div className="mt-5 text-sm">
         {percent === 100 ? (
           <motion.span
-            initial={{
-              scale: 0.9,
-            }}
-            animate={{
-              scale: [1, 1.05, 1],
-            }}
+            initial={{ scale: 0.9 }}
+            animate={{ scale: [1, 1.05, 1] }}
             transition={{
               repeat: Infinity,
               duration: 1.5,
             }}
-            className="
-              text-green-600
-              font-semibold
-            "
+            className="inline-flex items-center gap-2 font-semibold text-green-600"
           >
-            🎉 Completed!
+            <CelebrationRounded fontSize="small" />
+            Excellent! All tasks completed.
           </motion.span>
         ) : percent >= 60 ? (
-          <span
-            className="
-              text-green-500
-              font-semibold
-            "
-          >
-            💪 Keep going!
+          <span className="inline-flex items-center gap-2 font-semibold text-green-600">
+            <TrendingUpRounded fontSize="small" />
+            You're making great progress.
           </span>
         ) : percent > 0 ? (
-          <span
-            className="
-              text-yellow-500
-              font-semibold
-            "
-          >
-            ⚡ Getting there
+          <span className="inline-flex items-center gap-2 font-medium text-gray-600">
+            <BoltRounded fontSize="small" className="text-orange-500" />
+            Keep going. You're on track.
+          </span>
+        ) : total === 0 ? (
+          <span className="text-gray-500">
+            Start today's interview prep by adding your first task.
           </span>
         ) : (
-          <span className="text-gray-400">
-            Start your tasks
+          <span className="text-gray-500">
+            Your interview plan is ready. Let's get started.
           </span>
         )}
       </div>
