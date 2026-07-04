@@ -76,52 +76,49 @@ const TopActions = ({ isToday, hasUnfinishedYesterday, onRollover }) => {
       </motion.div>
 
       <AnimatePresence>
-  {isToday && hasUnfinishedYesterday && (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 6,
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        y: 0,
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.95,
-        y: -6,
-      }}
-      transition={{
-        duration: 0.25,
-      }}
-      className="
+        {isToday && hasUnfinishedYesterday && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.95,
+              y: 6,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.95,
+              y: -6,
+            }}
+            transition={{
+              duration: 0.25,
+            }}
+            className="
         flex
         flex-col
         items-start
         gap-1
       "
-    >
-      <Button
-        onClick={onRollover}
-        variant="secondary"
-      >
-        ⏭ Roll Over Tasks
-      </Button>
+          >
+            <Button onClick={onRollover} variant="secondary">
+              ⏭ Roll Over Tasks
+            </Button>
 
-      <p
-        className="
+            <p
+              className="
           text-xs
           text-gray-500
           ml-1
         "
-      >
-        You have unfinished tasks from yesterday
-      </p>
-    </motion.div>
-  )}
-</AnimatePresence>
+            >
+              You have unfinished tasks from yesterday
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

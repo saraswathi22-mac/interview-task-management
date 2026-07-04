@@ -32,6 +32,8 @@ import { toast } from "sonner";
 import useTaskBoard from "./hooks/useTaskBoard";
 import TaskFilters from "./TaskFilters";
 import { difficultyOrder } from "../../constants/difficultyOrder";
+import { Link } from "react-router-dom";
+import Button from "../../components/Button";
 
 const InterviewTaskList = () => {
   // Redux
@@ -89,20 +91,20 @@ const InterviewTaskList = () => {
   const unfinishedYesterdayTasks = useMemo(
     () =>
       interviewTasks.filter(
-        (t) => t.date === yesterday && t.status === "todo" && !t.isRolledOver
+        (t) => t.date === yesterday && t.status === "todo" && !t.isRolledOver,
       ),
-    [interviewTasks, yesterday]
+    [interviewTasks, yesterday],
   );
 
   const completedTasks = filteredTasks.filter(
-    (t) => t.status === "done"
+    (t) => t.status === "done",
   ).length;
 
   const currentWeekId = getWeekId(today);
 
   const weeklyTasks = useMemo(
     () => interviewTasks.filter((t) => getWeekId(t.date) === currentWeekId),
-    [interviewTasks, currentWeekId]
+    [interviewTasks, currentWeekId],
   );
 
   const { boardTasks, handleDragEnd, updateStatus } = useTaskBoard({
@@ -113,17 +115,9 @@ const InterviewTaskList = () => {
   const hour = new Date().getHours();
 
   const greeting =
-    hour < 12
-      ? "Good Morning"
-      : hour < 18
-        ? "Good Afternoon"
-        : "Good Evening";
+    hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
 
-  const userName = (
-    user?.displayName ||
-    user?.email?.split("@")[0] ||
-    "User"
-  )
+  const userName = (user?.displayName || user?.email?.split("@")[0] || "User")
     .replace(/[._-]/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
@@ -171,7 +165,7 @@ const InterviewTaskList = () => {
           isRolledOver: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        })
+        }),
       );
 
       // mark yesterday's task as rolled over
@@ -182,13 +176,13 @@ const InterviewTaskList = () => {
             isRolledOver: true,
             updatedAt: new Date().toISOString(),
           },
-        })
+        }),
       );
     });
 
     toast.success(
       `🔄 ${unfinishedYesterdayTasks.length} task${unfinishedYesterdayTasks.length > 1 ? "s" : ""
-      } rolled over to today`
+      } rolled over to today`,
     );
   };
 
@@ -206,7 +200,8 @@ const InterviewTaskList = () => {
         </h1>
 
         <p className="mt-2 text-gray-600 leading-relaxed">
-          Stay consistent. Every practice session brings you closer to your next opportunity.
+          Stay consistent. Every practice session brings you closer to your next
+          opportunity.
         </p>
       </div>
 
@@ -372,8 +367,76 @@ const InterviewTaskList = () => {
                         </motion.div>
                       ))
                     ) : (
-                      <div className="text-sm text-gray-400 text-center py-6">
-                        No tasks
+                      <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-white/50 backdrop-blur-sm shadow-sm">
+                          <span className="text-4xl">
+                            {status === "todo"
+                              ? "📋"
+                              : status === "inProgress"
+                                ? "🚀"
+                                : "🏆"}
+                          </span>
+                        </div>
+
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {status === "todo"
+                            ? "No tasks to start"
+                            : status === "inProgress"
+                              ? "Nothing in progress"
+                              : "No completed tasks yet"}
+                        </h3>
+
+                        <p className="mt-2 max-w-[220px] text-sm leading-6 text-gray-500">
+                          {status === "todo"
+                            ? "Create your first interview task to begin today's plan."
+                            : status === "inProgress"
+                              ? "Move a task here once you start working on it."
+                              : "Finish a task to celebrate your progress here."}
+                        </p>
+
+                        {status === "todo" && !isPastDay && (
+                          <motion.div
+                            whileHover={{
+                              y: -2,
+                              scale: 1.02,
+                            }}
+                            whileTap={{
+                              scale: 0.98,
+                            }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 280,
+                              damping: 18,
+                            }}
+                            className="mt-6"
+                          >
+                            <Link to="/add-task">
+                              <Button>
+                                <motion.span
+                                  whileHover={{ rotate: 90 }}
+                                  transition={{ duration: 0.25 }}
+                                  className="
+            mr-2
+            inline-flex
+            items-center
+            justify-center
+            w-5
+            h-5
+            rounded-full
+            bg-white
+            text-indigo-600
+            text-sm
+            font-bold
+          "
+                                >
+                                  +
+                                </motion.span>
+
+                                Add Task
+                              </Button>
+                            </Link>
+                          </motion.div>
+                        )}
                       </div>
                     )}
                   </div>
