@@ -3,8 +3,17 @@ import { getWeeklyStats, groupByKey } from "../helpers/weeklyStats";
 const WeeklySummary = ({ tasks }) => {
   const stats = getWeeklyStats(tasks);
 
-  const techStackStats = groupByKey(tasks, "techStack");
-  const difficultyStats = groupByKey(tasks, "difficulty");
+  const techStackStats = groupByKey(
+    tasks,
+    "techStack",
+    (stack) => stack.charAt(0).toUpperCase() + stack.slice(1)
+  );
+
+  const difficultyStats = groupByKey(
+    tasks,
+    "difficulty",
+    (level) => level.toLowerCase()
+  );
 
   const completionPercent =
     stats.total === 0 ? 0 : Math.round((stats.done / stats.total) * 100);

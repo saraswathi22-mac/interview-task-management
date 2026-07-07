@@ -13,13 +13,15 @@ export const getWeeklyStats = (tasks = []) => {
   );
 };
 
-export const groupByKey = (tasks = [], key) => {
+export const groupByKey = (tasks = [], key, formatter = (value) => value) => {
   return tasks.reduce((acc, task) => {
-    const value = task[key]?.toLowerCase();
+    const value = task[key];
 
     if (!value) return acc;
 
-    acc[value] = (acc[value] || 0) + 1;
+    const formattedValue = formatter(value);
+
+    acc[formattedValue] = (acc[formattedValue] || 0) + 1;
 
     return acc;
   }, {});
