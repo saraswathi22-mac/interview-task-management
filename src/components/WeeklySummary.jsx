@@ -1,4 +1,5 @@
 import { getWeeklyStats, groupByKey } from "../helpers/weeklyStats";
+import TechStackCoverage from "./TechStackCoverage";
 
 const WeeklySummary = ({ tasks }) => {
   const stats = getWeeklyStats(tasks);
@@ -88,28 +89,7 @@ const WeeklySummary = ({ tasks }) => {
       {/* Breakdown */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Tech Stack */}
-        <div className="rounded-2xl border border-gray-100 p-5">
-          <h4 className="text-sm font-semibold text-gray-800 mb-4">
-            🚀 Tech Stack Coverage
-          </h4>
-
-          {Object.keys(techStackStats).length ? (
-            <ul className="space-y-2">
-              {Object.entries(techStackStats).map(([stack, count]) => (
-                <li
-                  key={stack}
-                  className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 text-sm"
-                >
-                  <span className="text-gray-700">{stack}</span>
-
-                  <span className="font-semibold text-gray-900">{count}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <EmptyText text="No tasks this week" />
-          )}
-        </div>
+        <TechStackCoverage techStackStats={techStackStats} />
 
         {/* Difficulty */}
         <div className="rounded-2xl border border-gray-100 p-5">
