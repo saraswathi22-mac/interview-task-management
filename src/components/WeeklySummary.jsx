@@ -7,20 +7,18 @@ const WeeklySummary = ({ tasks }) => {
   const techStackStats = groupByKey(
     tasks,
     "techStack",
-    (stack) => stack.charAt(0).toUpperCase() + stack.slice(1)
+    (stack) => stack.charAt(0).toUpperCase() + stack.slice(1),
   );
 
-  const difficultyStats = groupByKey(
-    tasks,
-    "difficulty",
-    (level) => level.toLowerCase()
+  const difficultyStats = groupByKey(tasks, "difficulty", (level) =>
+    level.toLowerCase(),
   );
 
   const completionPercent =
     stats.total === 0 ? 0 : Math.round((stats.done / stats.total) * 100);
 
   const topTech = Object.entries(techStackStats).sort(
-    (a, b) => b[1] - a[1]
+    (a, b) => b[1] - a[1],
   )[0]?.[0];
 
   const hardTasks = difficultyStats.hard || 0;
@@ -141,7 +139,9 @@ const StatCard = ({ label, value, color = "gray" }) => {
     <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
       <p className="text-xs font-medium text-gray-500">{label}</p>
 
-      <p className={`mt-2 text-xl md:text-2xl font-bold ${colorMap[color]}`}>{value}</p>
+      <p className={`mt-2 text-xl md:text-2xl font-bold ${colorMap[color]}`}>
+        {value}
+      </p>
     </div>
   );
 };
