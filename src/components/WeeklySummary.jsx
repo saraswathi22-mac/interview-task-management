@@ -33,30 +33,46 @@ const WeeklySummary = ({ tasks }) => {
 
   const easyTasks = difficultyStats.easy || 0;
 
-  let insightMessage = "Good progress this week. Keep maintaining consistency.";
+  const insights = [];
 
-  if (completionPercent >= 85) {
-    insightMessage =
-      "Excellent consistency this week. You're building strong interview momentum.";
-  } else if (completionPercent >= 60) {
-    insightMessage =
-      "Good effort this week. Completing a few more pending tasks can improve your preparation speed.";
+  if (stats.total === 0) {
+    insights.push(
+      "No interview tasks were scheduled this week. Plan a few tasks to start building momentum.",
+    );
+  } else if (completionPercent >= 90) {
+    insights.push(
+      `Outstanding work! You completed ${completionPercent}% of your planned tasks this week.`,
+    );
+  } else if (completionPercent >= 75) {
+    insights.push(
+      `Great consistency! You completed ${completionPercent}% of your planned tasks this week.`,
+    );
+  } else if (completionPercent >= 50) {
+    insights.push(
+      `You completed ${completionPercent}% of your planned tasks this week. Finishing a few more tasks will help you stay on track.`,
+    );
   } else {
-    insightMessage =
-      "Your consistency dropped this week. Try focusing on smaller daily goals to regain momentum.";
+    insights.push(
+      `You completed ${completionPercent}% of your planned tasks this week. Try breaking your goals into smaller daily tasks to build consistency.`,
+    );
   }
 
-  if (topTech) {
-    insightMessage += ` Your strongest focus area was ${topTech}.`;
-  }
+  let insightMessage = insights.join(" ");
 
-  if (hardTasks >= 3) {
-    insightMessage += " Great job tackling hard problems consistently.";
-  } else if (mediumTasks > easyTasks) {
-    insightMessage +=
-      " You're steadily progressing through medium-level challenges.";
-  } else {
-    insightMessage += " Try solving more medium and hard problems next week.";
+  if (stats.done > 0) {
+    if (topTech) {
+      insights.push(`Your strongest focus area was ${topTech}.`);
+    }
+
+    if (hardTasks >= 3) {
+      insights.push("Great job tackling hard problems consistently.");
+    } else if (mediumTasks > easyTasks) {
+      insights.push(
+        "Most of your practice focused on medium-level challenges.",
+      );
+    } else {
+      insights.push("Try solving more medium and hard problems next week.");
+    }
   }
 
   return (
