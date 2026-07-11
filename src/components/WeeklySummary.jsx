@@ -10,6 +10,15 @@ const WeeklySummary = ({ tasks }) => {
   const stats = getWeeklyStats(tasks);
   const dailyActivity = getDailyActivity(tasks);
 
+  const completedTasks = tasks.filter((task) => task.status === "done");
+  const completedDailyActivity = getDailyActivity(completedTasks);
+
+  const maxTasks = Math.max(...completedDailyActivity.map((day) => day.tasks));
+
+  const mostProductiveDays = completedDailyActivity
+    .filter((day) => day.tasks === maxTasks && maxTasks > 0)
+    .map((day) => day.day);
+
   const techStackStats = groupByKey(
     tasks,
     "techStack",
@@ -57,7 +66,15 @@ const WeeklySummary = ({ tasks }) => {
     );
   }
 
-  let insightMessage = insights.join(" ");
+  if (mostProductiveDays.length === 1) {
+    insights.push(
+      `Your most productive day was ${mostProductiveDays[0]} with ${maxTasks} task${maxTasks > 1 ? "s" : ""}.`,
+    );
+  } else if (mostProductiveDays.length > 1) {
+    insights.push(
+      `Your most productive days were ${mostProductiveDays.join(", ")} with ${maxTasks} task${maxTasks > 1 ? "s" : ""} each.`,
+    );
+  }
 
   if (stats.done > 0) {
     if (topTech) {
@@ -74,6 +91,8 @@ const WeeklySummary = ({ tasks }) => {
       insights.push("Try solving more medium and hard problems next week.");
     }
   }
+
+  let insightMessage = insights.join(" ");
 
   return (
     <div className="space-y-6 md:space-y-8">
