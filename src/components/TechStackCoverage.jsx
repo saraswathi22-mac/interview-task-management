@@ -1,4 +1,11 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Label,
+} from "recharts";
 
 const TECH_COLORS = {
   React: "#3B82F6",
@@ -43,6 +50,34 @@ function TechStackCoverage({ techStackStats }) {
                       fill={TECH_COLORS[item.name] ?? "#94A3B8"}
                     />
                   ))}
+                  <Label
+                    content={({ viewBox }) => {
+                      const { cx, cy } = viewBox;
+
+                      return (
+                        <text
+                          x={cx}
+                          y={cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          <tspan
+                            x={cx}
+                            dy="-8"
+                            fontSize="24"
+                            fontWeight="700"
+                            fill="#111827"
+                          >
+                            {total}
+                          </tspan>
+
+                          <tspan x={cx} dy="22" fontSize="14" fill="#6B7280">
+                            {total === 1 ? "Task" : "Tasks"}
+                          </tspan>
+                        </text>
+                      );
+                    }}
+                  />
                 </Pie>
 
                 <Tooltip

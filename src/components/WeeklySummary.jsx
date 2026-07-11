@@ -1,8 +1,14 @@
-import { getWeeklyStats, groupByKey } from "../helpers/weeklyStats";
+import {
+  getWeeklyStats,
+  groupByKey,
+  getDailyActivity,
+} from "../helpers/weeklyStats";
 import TechStackCoverage from "./TechStackCoverage";
+import DailyActivityChart from "./DailyActivityChart";
 
 const WeeklySummary = ({ tasks }) => {
   const stats = getWeeklyStats(tasks);
+  const dailyActivity = getDailyActivity(tasks);
 
   const techStackStats = groupByKey(
     tasks,
@@ -89,29 +95,8 @@ const WeeklySummary = ({ tasks }) => {
         {/* Tech Stack */}
         <TechStackCoverage techStackStats={techStackStats} />
 
-        {/* Difficulty */}
-        <div className="rounded-2xl border border-gray-100 p-5">
-          <h4 className="text-sm font-semibold text-gray-800 mb-4">
-            🎯 Difficulty Distribution
-          </h4>
-
-          {Object.keys(difficultyStats).length ? (
-            <ul className="space-y-2">
-              {Object.entries(difficultyStats).map(([level, count]) => (
-                <li
-                  key={level}
-                  className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 text-sm capitalize"
-                >
-                  <span className="text-gray-700">{level}</span>
-
-                  <span className="font-semibold text-gray-900">{count}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <EmptyText text="No data available" />
-          )}
-        </div>
+        {/* Daily Activity */}
+        <DailyActivityChart data={dailyActivity} />
       </div>
 
       {/* Weekly Insight */}

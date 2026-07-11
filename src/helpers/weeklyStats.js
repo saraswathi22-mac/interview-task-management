@@ -9,7 +9,7 @@ export const getWeeklyStats = (tasks = []) => {
 
       return acc;
     },
-    { total: 0, done: 0, skipped: 0, todo: 0 }
+    { total: 0, done: 0, skipped: 0, todo: 0 },
   );
 };
 
@@ -25,4 +25,26 @@ export const groupByKey = (tasks = [], key, formatter = (value) => value) => {
 
     return acc;
   }, {});
+};
+
+export const getDailyActivity = (tasks = []) => {
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const activity = days.map((day) => ({
+    day,
+    tasks: 0,
+  }));
+
+  tasks.forEach((task) => {
+    const date = new Date(task.date);
+    const jsDay = date.getDay(); // 0 = Sun
+
+    const index = jsDay === 0 ? 6 : jsDay - 1;
+
+    if (activity[index]) {
+      activity[index].tasks++;
+    }
+  });
+
+  return activity;
 };
