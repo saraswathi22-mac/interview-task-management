@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { login, signup } from "../firebase/auth";
-import prepFlow from "../../public/prep-flow.png";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -81,7 +80,7 @@ function Login() {
         {/* Header */}
         <div className="text-center mb-12">
           <img
-            src={prepFlow}
+            src="/prep-flow.png"
             alt="PrepFlow"
             className="mx-auto h-16 w-16 object-contain mb-2"
           />

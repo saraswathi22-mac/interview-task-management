@@ -28,8 +28,6 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
-import prepFlowLogo from "../public/prep-flow.png";
-
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +103,7 @@ function App() {
             {/* Logo */}
             <div className="flex items-center gap-1">
               <img
-                src={prepFlowLogo}
+                src="/prep-flow.png"
                 alt="PrepFlow"
                 className="h-11 w-10 object-contain"
               />
