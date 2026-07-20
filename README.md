@@ -2,7 +2,7 @@
 
 A full-stack interview preparation planner that turns scattered prep notes into a structured, trackable routine — built with React, Redux Toolkit, and Firebase.
 
-## 🔗 Live Demo: [View Live App](https://interview-task-management.netlify.app/)
+## 🔗 Live Demo: [View Live App](https://prep-flow-app.netlify.app/)
 
 
 ## 💡 Why I Built This
