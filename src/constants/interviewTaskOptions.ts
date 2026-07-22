@@ -4,7 +4,7 @@ export const TECH_STACK_OPTIONS = [
   "TypeScript",
   "HTML/CSS",
   "Frontend System Design",
-];
+] as const;
 
 export const DIFFICULTY_OPTIONS = [
   {
@@ -19,4 +19,4 @@ export const DIFFICULTY_OPTIONS = [
     value: "hard",
     label: "Hard 🔴",
   },
-];
+] as const;
