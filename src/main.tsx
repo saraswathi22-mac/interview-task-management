@@ -13,7 +13,7 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 
 // Create root element
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
   <React.StrictMode>
@@ -22,5 +22,5 @@ root.render(
         <App />
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
