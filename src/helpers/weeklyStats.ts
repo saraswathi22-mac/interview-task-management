@@ -1,4 +1,10 @@
-export const getWeeklyStats = (tasks = []) => {
+type Task = {
+  status: "done" | "skipped" | "todo";
+  date: string;
+  [key: string]: unknown;
+};
+
+export const getWeeklyStats = (tasks: Task[] = []) => {
   return tasks.reduce(
     (acc, task) => {
       acc.total++;
@@ -13,21 +19,28 @@ export const getWeeklyStats = (tasks = []) => {
   );
 };
 
-export const groupByKey = (tasks = [], key, formatter = (value) => value) => {
-  return tasks.reduce((acc, task) => {
-    const value = task[key];
+export const groupByKey = (
+  tasks: Task[] = [],
+  key: string,
+  formatter = (value: unknown) => String(value),
+) => {
+  return tasks.reduce(
+    (acc, task) => {
+      const value = task[key];
 
-    if (!value) return acc;
+      if (!value) return acc;
 
-    const formattedValue = formatter(value);
+      const formattedValue = formatter(value);
 
-    acc[formattedValue] = (acc[formattedValue] || 0) + 1;
+      acc[formattedValue] = (acc[formattedValue] || 0) + 1;
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 };
 
-export const getDailyActivity = (tasks = []) => {
+export const getDailyActivity = (tasks: Task[] = []) => {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const activity = days.map((day) => ({

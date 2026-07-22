@@ -12,12 +12,12 @@ export const getYesterday = () => {
 };
 
 // Generate week ID (example: 2026-W12)
-export const getWeekId = (dateStr) => {
+export const getWeekId = (dateStr: string) => {
   const date = new Date(dateStr);
 
   const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
   const pastDays = Math.floor(
-    (date - firstDayOfYear) / (24 * 60 * 60 * 1000)
+    (date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000),
   );
 
   const week = Math.ceil((pastDays + firstDayOfYear.getDay() + 1) / 7);
