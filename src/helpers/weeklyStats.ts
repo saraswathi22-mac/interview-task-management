@@ -1,10 +1,6 @@
-type Task = {
-  status: "done" | "skipped" | "todo";
-  date: string;
-  [key: string]: unknown;
-};
+import type { InterviewTask } from "../types/task";
 
-export const getWeeklyStats = (tasks: Task[] = []) => {
+export const getWeeklyStats = (tasks: InterviewTask[] = []) => {
   return tasks.reduce(
     (acc, task) => {
       acc.total++;
@@ -20,8 +16,8 @@ export const getWeeklyStats = (tasks: Task[] = []) => {
 };
 
 export const groupByKey = (
-  tasks: Task[] = [],
-  key: string,
+  tasks: InterviewTask[] = [],
+  key: keyof InterviewTask,
   formatter = (value: unknown) => String(value),
 ) => {
   return tasks.reduce(
@@ -40,7 +36,7 @@ export const groupByKey = (
   );
 };
 
-export const getDailyActivity = (tasks: Task[] = []) => {
+export const getDailyActivity = (tasks: InterviewTask[] = []) => {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const activity = days.map((day) => ({

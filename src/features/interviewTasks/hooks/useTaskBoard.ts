@@ -2,9 +2,24 @@ import { useEffect, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { editInterviewTask } from "../interviewTaskSlice";
 import { toast } from "sonner";
+import type { InterviewTask, TaskStatus } from "../../../types/task";
+import type { DragEndEvent } from "@dnd-kit/core";
 
-const useTaskBoard = ({ filteredTasks, dispatch }) => {
-  const [boardTasks, setBoardTasks] = useState({
+type UseTaskBoardProps = {
+  filteredTasks: InterviewTask[];
+  dispatch: any;
+};
+
+type BoardTasks = {
+  todo: InterviewTask[];
+  inProgress: InterviewTask[];
+  done: InterviewTask[];
+};
+
+type BoardColumn = keyof BoardTasks;
+
+const useTaskBoard = ({ filteredTasks, dispatch }: UseTaskBoardProps) => {
+  const [boardTasks, setBoardTasks] = useState<BoardTasks>({
     todo: [],
     inProgress: [],
     done: [],
@@ -13,19 +28,17 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
   useEffect(() => {
     setBoardTasks({
       todo: filteredTasks.filter((t) => t.status === "todo"),
-      inProgress: filteredTasks.filter(
-        (t) => t.status === "inProgress"
-      ),
+      inProgress: filteredTasks.filter((t) => t.status === "inProgress"),
       done: filteredTasks.filter((t) => t.status === "done"),
     });
   }, [filteredTasks]);
 
-  const updateStatus = (id, status) => {
+  const updateStatus = (id: string, status: TaskStatus) => {
     dispatch(
       editInterviewTask({
         id,
         updates: { status },
-      })
+      }),
     );
 
     if (status === "done") {
@@ -37,7 +50,7 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
     }
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over) return;
@@ -48,9 +61,9 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
     let sourceColumn = null;
     let targetColumn = null;
 
-    for (const column in boardTasks) {
+    for (const column of Object.keys(boardTasks) as BoardColumn[]) {
       const hasActiveTask = boardTasks[column].find(
-        (task) => task.id === activeId
+        (task) => task.id === activeId,
       );
 
       if (hasActiveTask) {
@@ -61,9 +74,7 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
         targetColumn = column;
       }
 
-      const hasOverTask = boardTasks[column].find(
-        (task) => task.id === overId
-      );
+      const hasOverTask = boardTasks[column].find((task) => task.id === overId);
 
       if (hasOverTask) {
         targetColumn = column;
@@ -74,22 +85,18 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
 
     if (sourceColumn === targetColumn) {
       const oldIndex = boardTasks[sourceColumn].findIndex(
-        (task) => task.id === activeId
+        (task) => task.id === activeId,
       );
 
       const newIndex = boardTasks[targetColumn].findIndex(
-        (task) => task.id === overId
+        (task) => task.id === overId,
       );
 
       if (oldIndex === newIndex) return;
 
       setBoardTasks((prev) => ({
         ...prev,
-        [sourceColumn]: arrayMove(
-          prev[sourceColumn],
-          oldIndex,
-          newIndex
-        ),
+        [sourceColumn]: arrayMove(prev[sourceColumn], oldIndex, newIndex),
       }));
 
       return;
@@ -98,14 +105,12 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
     const sourceTasks = [...boardTasks[sourceColumn]];
     const targetTasks = [...boardTasks[targetColumn]];
 
-    const activeTask = sourceTasks.find(
-      (task) => task.id === activeId
-    );
+    const activeTask = sourceTasks.find((task) => task.id === activeId);
 
     if (!activeTask) return;
 
     const filteredSourceTasks = sourceTasks.filter(
-      (task) => task.id !== activeId
+      (task) => task.id !== activeId,
     );
 
     const updatedTask = {
@@ -127,7 +132,7 @@ const useTaskBoard = ({ filteredTasks, dispatch }) => {
         updates: {
           status: targetColumn,
         },
-      })
+      }),
     );
 
     if (targetColumn === "done") {
